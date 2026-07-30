@@ -1,0 +1,60 @@
+
+# Python specific
+.mypy_cache/
+.pytest_cache/
+*.mp3
+*.mp4
+*.wav
+rvc/
+audio_separator/
+models/
+
+*.pdf
+.venv/
+venv/
+*.pyc
+__pycache__/
+*.o
+*.obj
+dist/
+build/
+target/
+*.class
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# Dependencies
+.venv/
+venv/
+node_modules/
+.mypy_cache/
+.pytest_cache/
+.gradle/
+venv/
+.venv/
+.env
+.env.local
+.env.*
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+models/audio_separator/*.onnx
+models/.initialized
+models/

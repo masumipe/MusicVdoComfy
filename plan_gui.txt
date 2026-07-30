@@ -1,0 +1,379 @@
+================================================================================
+ MUSIC VDO COMFY — NICEGUI APPLICATION PLAN (elaborated)
+ Based on: Plan.txt + existing scripts + ComfyUI workflows in the workspace
+================================================================================
+
+--------------------------------------------------------------------------------
+ 0. GOAL
+--------------------------------------------------------------------------------
+Build a Python NiceGUI desktop application that drives an end-to-end AI music
+video generation pipeline. The app wraps the existing helper scripts
+(1_yt_dl.py, 2_Audio_separator.py, 3_SegmentAudio.py) and the ComfyUI API
+workflows (qwen_image_edit_2imgs_1_rashed.json, qwen_multi_camera.json,
+infinit_API.json) into a single orchestrated UI with LLM-driven prompt
+expansion, vision-based image description, status polling, error logging and
+memory management.
+
+--------------------------------------------------------------------------------
+ 1. PROPOSED FILE / MODULE LAYOUT
+--------------------------------------------------------------------------------
+music_vdo_app.py            # NiceGUI entrypoint: UI + pipeline orchestration
+configure.json              # NEW: API keys, endpoints, paths, model defaults
+core/
+  __init__.py
+  config.py                 # load/validate configure.json (single source of truth)
+  comfy_client.py           # unified ComfyUI HTTP client (start/queue/poll/history/save/free)
+  llm.py                    # LLM calls: theme expansion + image description blend
+  image_describe.py         # vision API wrapper for img_inputs description
+  stage_yt.py               # wraps 1_yt_dl.py (YouTube download)
+  stage_vocal.py            # wraps 2_Audio_separator.py (UVR + RVC voice swap)
+  stage_segment.py          # wraps 3_SegmentAudio.py (silence-based segmentation)
+  stage_pose.py             # qwen_image_edit_2imgs_1_rashed.json per image pair
+  stage_multiangle.py       # qwen_multi_camera.json per generated image
+  stage_video.py            # infinit_API.json per audio segment
+  memory.py                 # free_memory() helper called between stages
+  logger.py                 # structured error/status log -> logs/
+logs/                       # runtime logs + per-job error dumps
+Generated_VDO/              # final per-segment mp4 outputs
+
+Existing files that are REUSED (not rewritten):
+  1_yt_dl.py, 2_Audio_separator.py, 3_SegmentAudio.py  (imported by stage_*.py)
+  qwen_image_edit_2imgs_1_rashed.json, qwen_multi_camera.json, infinit_API.json
+  Theme.txt
+
+--------------------------------------------------------------------------------
+ 2. configure.json (PROPOSED SCHEMA)
+--------------------------------------------------------------------------------
+{
+  "llm": {
+    "provider": "openai",                       // openai | ollama | custom
+    "api_key": "sk-...",
+    "base_url": "https://api.openai.com/v1",
+    "theme_model": "gpt-4o-mini",
+    "vision_model": "gpt-4o",
+    "max_tokens": 800,
+    "temperature": 0.7
+  },
+  "comfyui": {
+    "host": "127.0.0.1",
+    "port": 8188,
+    "python_exe": "D:\\Myfiles\\Comfyui\\ComfyUI-Easy-Install\\python_embeded\\python.exe",
+    "main_py":  "D:\\Myfiles\\Comfyui\\ComfyUI-Easy-Install\\ComfyUI\\main.py",
+    "args": ["--windows-standalone-build","--use-sage-attention","--enable-cors-header"],
+    "poll_interval_sec": 10,                    // Plan item 10: 10s status check
+    "poll_timeout_sec": 1200,                   // 20 min hard cap per job
+    "startup_wait_sec": 60
+  },
+  "paths": {
+    "root": "D:\\Myfiles\\MusicVDOComfy",
+    "img_inputs": "img_inputs",
+    "pose_inputs": "pose_inputs",
+    "generated_imgs": "generated_imgs",
+    "generated_img_vdo": "generated_img_vdo",
+    "audio_segments": "AudioSegments",
+    "outputs": "outputs",
+    "final_videos": "Generated_VDO",
+    "logs": "logs"
+  },
+  "rvc": {
+    "ultimate_rvc_dir": "D:\\Myfiles\\ultimate-rvc",
+    "voice_model": "Rashed_V_Model",
+    "n_octaves": 0, "n_semitones": 0, "f0_method": "rmvpe",
+    "index_rate": 0.3, "rms_mix_rate": 1.0, "protect_rate": 0.33
+  },
+  "segment": {
+    "min_sec": 5, "max_sec": 20,
+    "silence_thresh_db": -45, "min_silence_ms": 700,
+    "reduce_long_silences": true, "target_silence_sec": 1.0
+  },
+  "video": {
+    "frame_rate": 25,
+    "max_frames_per_block": 81,                 // matches infinit_API.json length
+    "chain_blocks": true                        // chain multiple WanInfinite blocks for long audio
+  }
+}
+
+--------------------------------------------------------------------------------
+ 3. NICEGUI UI STRUCTURE
+--------------------------------------------------------------------------------
+Single-page app, dark theme, left sidebar stepper + main content area.
+
+SIDEBAR (stepper, one entry per stage):
+  [1] Theme              [2] Input Images       [3] YouTube Audio
+  [4] Vocal Swap         [5] Segment Audio      [6] Pose Change
+  [7] Multi-Angle        [8] Video Generation   [9] Logs / Errors
+
+Each stage card contains:
+  - status badge (idle / running / done / error)
+  - action button(s)
+  - inline log area (tail of current stage log)
+  - result preview (image thumbnails / audio waveform / video link)
+
+GLOBAL TOP BAR:
+  - "Run All" button (sequential execution of stages 1..8)
+  - "Stop" button (cancels current ComfyUI job + pipeline)
+  - progress bar (stage X of 8)
+  - ComfyUI status indicator (online/offline) + "Start ComfyUI" / "Free Memory"
+
+GLOBAL BOTTOM PANEL:
+  - live log console (all stages merged, color-coded)
+  - error counter + link to logs/ folder
+
+--------------------------------------------------------------------------------
+ 4. STAGE-BY-STAGE BEHAVIOR
+--------------------------------------------------------------------------------
+
+STAGE 1 — Theme (Plan item 1)
+  UI:
+    - Editor preloaded with contents of Theme.txt (editable).
+    - "Expand with LLM" button.
+  Logic (core/llm.py: expand_theme):
+    - Send theme text to LLM with a system prompt asking for:
+        * detailed visual prompt
+        * camera/shot suggestions
+        * style/mood keywords
+        * negative prompt
+        * technical elements (lighting, color grading, motion)
+    - Returns JSON: {prompt, camera, style, negative, technical}
+    - Saved to outputs/theme_expanded.json and shown in UI for review/edit.
+  Memory: call free_memory() is N/A here (no ComfyUI yet); gc.collect().
+
+STAGE 2 — Input Images (Plan item 2)
+  UI:
+    - Grid of thumbnails from img_inputs/ (checkbox to select).
+    - For each selected image: "Describe" action.
+  Logic (core/image_describe.py + core/llm.py):
+    - Vision API call per image -> textual description (subject, attire, pose,
+      background, distinctive features).
+    - Blend description + theme_expanded.prompt -> final per-image prompt.
+    - Save map: img_inputs/<name>.png -> {description, final_prompt}
+      to outputs/image_prompts.json.
+  Note: character consistency is enforced in Stage 6 by always feeding the
+  img_input as image1 (the identity reference).
+
+STAGE 3 — YouTube Audio (Plan item 3)
+  UI:
+    - URL text field + "Download" button.
+    - Progress (yt-dlp hooks) shown in log.
+  Logic (core/stage_yt.py):
+    - Wraps 1_yt_dl.py logic as a function: download(url, out_dir).
+    - Extracts audio to outputs/yt_audio.wav (ffmpeg -vn pcm_s16le 44100 stereo).
+    - Stores path for next stages.
+
+STAGE 4 — Vocal Swap (Plan item 4)
+  UI:
+    - Shows input audio path, voice model name (from configure.json).
+    - "Run" button.
+  Logic (core/stage_vocal.py):
+    - Wraps 2_Audio_separator.py:
+        1. audio_separator.Separator (UVR-MDX-NET models) -> vocals stem.
+        2. subprocess to ultimate-rvc (uv run ... convert-voice) with the
+           Rashed_V_Model, using params from configure.json.
+    - Output: outputs/<converted_vocal>.wav.
+  Memory: after RVC subprocess completes, free_memory() + gc.collect().
+
+STAGE 5 — Segment Audio by Silence (Plan item 5)
+  UI:
+    - Shows segment count + list of segment files with durations.
+    - Adjustable thresholds (min/max sec, silence thresh) pre-filled from config.
+  Logic (core/stage_segment.py):
+    - Calls 3_SegmentAudio.split_on_silence_segments(...) with config values.
+    - Output: AudioSegments/segment_001.wav ... segment_NNN.wav.
+  Memory: cleanup temp files (already done by the script).
+
+STAGE 6 — Pose Change (Plan item 6)
+  Workflow: qwen_image_edit_2imgs_1_rashed.json
+  UI:
+    - Lists pairs (img_inputs/<name>.png + pose_inputs/<name>.png) with previews.
+    - "Generate" button per pair + "Generate All".
+  Logic (core/stage_pose.py):
+    For each matching pair (same basename):
+      1. Load workflow JSON (deep copy).
+      2. Upload both images to ComfyUI via /upload/image -> get server filenames.
+      3. Set node "78" (LoadImage) inputs.image = img_input server name.
+         Set node "52" (LoadImage) inputs.image = pose_input server name.
+         (node 78 -> 27 FluxKontextImageScale -> image1 of TextEncodeQwenImageEditPlus
+          node 52 -> 53 FluxKontextImageScale -> image2)
+      4. Set node "36" (positive TextEncodeQwenImageEditPlus) inputs.prompt =
+         final_prompt from Stage 2 (blended image description + theme).
+         Keep node "33" negative prompt as-is (or augment with theme.negative).
+      5. Randomize node "3" KSampler seed.
+      6. comfy_client.queue(workflow) -> wait -> fetch output images (node "9"
+         SaveImage) -> save to generated_imgs/<name>.png.
+    Character consistency: image1 is always the identity image (img_input),
+    so face/attire are preserved; image2 (pose_input) supplies pose/background.
+  Memory: free_memory() after EACH pair generation (Plan item 11).
+
+STAGE 7 — Multi-Angle (Plan item 7)
+  Workflow: qwen_multi_camera.json
+  UI:
+    - Lists images in generated_imgs/; select which to process.
+    - Shows 4 angle presets (horizontal/vertical/zoom) editable.
+  Logic (core/stage_multiangle.py):
+    For each selected image:
+      1. Load workflow JSON (deep copy).
+      2. Upload image -> set node "41" (LoadImage) inputs.image.
+      3. (Optional) inject theme prompt into node "120" promptList or the
+         TextEncodeQwenImageEditPlusPro node "110" instruction.
+      4. Randomize node "107" KSampler seed.
+      5. queue -> wait -> fetch outputs (node "116" SaveImage, 4 images) ->
+         save to generated_img_vdo/<name>_angle_K.png (K=1..4).
+  Memory: free_memory() after each image's 4-angle batch.
+
+STAGE 8 — Video Generation per Segment (Plan item 9)
+  Workflow: infinit_API.json
+  UI:
+    - Table: rows = AudioSegments/segment_*.wav; columns = audio duration,
+      assigned start image (cycled from generated_img_vdo/), status.
+    - "Generate All Videos" + per-row "Generate".
+  Logic (core/stage_video.py):
+    For each segment audio + cycled start image:
+      1. Load infinit_API.json (deep copy).
+      2. Upload audio via /upload/audio -> set node "171"
+         (VHS_LoadAudioUpload) inputs.audio = uploaded name.
+      3. Upload start image via /upload/image -> set node "32" (LoadImage)
+         inputs.image = uploaded name.
+      4. Set node "14" (CLIPTextEncode positive) inputs.text = theme prompt
+         (segment-specific LLM variation if desired).
+         Set node "250" (negative) inputs.text = theme.negative.
+      5. Compute frames = round(audio_duration_sec * frame_rate).
+         If frames <= max_frames_per_block (81): set length on the single
+         WanInfiniteTalkToVideo block used (node "129"/"130"/"183" etc.).
+         If frames > 81 and chain_blocks=true: the workflow already contains
+         multiple chained WanInfiniteTalkToVideo + KSampler blocks; we enable
+         the required number of blocks and set each block's length so the
+         total covers the audio. (Implementation detail: enable/disable
+         blocks by keeping only the needed subset of nodes, or run the
+         workflow repeatedly with previous_frames linkage.)
+      6. Randomize all KSampler seeds (nodes 180, 181, 183-block seeds, ...).
+      7. queue -> wait (poll every 10s per Plan item 10) -> fetch output video
+         from VHS_VideoCombine nodes (173 / 182 / ...) via /view?filename=...
+         -> save to Generated_VDO/segment_NN.mp4.
+  Memory: free_memory() after EACH segment video (Plan item 11) — critical to
+  avoid VRAM OOM across many segments.
+
+STAGE 9 — Status, Polling & Error Logging (Plan item 10)
+  Implemented in core/comfy_client.py:
+    - wait(prompt_id): loop every poll_interval_sec (10s) hitting
+      /history/<prompt_id>. Return when 'outputs' present.
+      On each iteration also GET /queue to detect dropped prompts.
+    - Capture:
+        * history[prompt_id].error / .exception / .status_messages
+        * any node-level execution_errors
+      Write to logs/error_<prompt_id>_<timestamp>.json with full dict +
+      workflow snapshot (the exact JSON sent) for reproducibility.
+    - UI log panel streams these events in real time (nicegui.ui.log).
+    - Hard timeout = poll_timeout_sec; on timeout mark stage as error and
+      offer "Retry" in UI.
+
+STAGE 10 — Memory Management (Plan item 11)
+  core/memory.py:
+    def free_memory(client):
+        # 1. Tell ComfyUI to unload models + free VRAM
+        client.post("/free", json={"unload_models": True, "free_memory": True})
+        # 2. Local cleanup
+        import gc; gc.collect()
+        try:
+            import torch; torch.cuda.empty_cache()
+        except Exception: pass
+  Call sites:
+    - after Stage 4 (RVC subprocess)
+    - after EACH Stage 6 pair
+    - after EACH Stage 7 image batch
+    - after EACH Stage 8 segment video
+    - on "Stop" button
+    - on app shutdown
+
+--------------------------------------------------------------------------------
+ 5. UNIFIED COMFYUI CLIENT (core/comfy_client.py)
+--------------------------------------------------------------------------------
+Consolidates the duplicated logic currently spread across:
+  4_qwen_image_edit_auto.py, st_com_vd_gen.py, ws_comfy.py, comfyui_st_sg.py.
+
+API:
+  class ComfyClient:
+    __init__(host, port, python_exe, main_py, args, poll_interval, timeout)
+    is_online() -> bool                      # GET /system_stats
+    start_server() -> bool                   # spawn hidden ComfyUI, wait
+    stop_server()
+    upload_file(path, type="image") -> name   # POST /upload/image|/upload/audio
+    queue(workflow: dict) -> prompt_id       # POST /prompt
+    wait(prompt_id) -> outputs|None          # poll /history every poll_interval
+    fetch_outputs(outputs) -> list[Path]      # download via /view
+    free_memory()                            # POST /free
+    get_queue() -> dict                      # GET /queue (running/pending)
+    get_history(prompt_id) -> dict           # GET /history/<id>
+
+Notes:
+  - Uses requests (already installed in .venv) instead of urllib for clarity.
+  - Server spawned with CREATE_NO_WINDOW / STARTF_USESHOWWINDOW (Windows hidden).
+  - All HTTP errors captured into logger; never crash the UI thread.
+  - All long-running ops run in nicegui background tasks (async) so the UI
+    stays responsive; progress posted to a shared status object the UI polls.
+
+--------------------------------------------------------------------------------
+ 6. LLM MODULE (core/llm.py)
+--------------------------------------------------------------------------------
+  expand_theme(theme_text: str) -> dict
+      System prompt instructs the model to return strict JSON:
+      { "prompt": "...", "camera": "...", "style": "...",
+        "negative": "...", "technical": "..." }
+  describe_image(image_path: str) -> str
+      Sends image (base64 or file upload depending on provider) to vision_model.
+  blend(image_desc: str, theme_expanded: dict) -> str
+      Combines into a single positive prompt for ComfyUI text nodes, e.g.:
+      "<image description>. <theme prompt>. Style: <theme style>. Camera: <theme camera>."
+  segment_prompt(theme_expanded, segment_index, segment_duration) -> str
+      Optional per-segment variation of the theme prompt for Stage 8.
+
+Provider abstraction:
+  - openai-compatible (default): requests.post(base_url+"/chat/completions").
+  - ollama: base_url "http://localhost:11434/api/chat".
+  - Provider chosen by configure.json llm.provider.
+
+--------------------------------------------------------------------------------
+ 7. DEPENDENCIES TO ADD
+--------------------------------------------------------------------------------
+Current .venv has: requests, httpx, pillow, pydub, yt-dlp, audio-separator.
+Missing (to install):
+  nicegui          # UI framework
+  (openai)         # only if using openai SDK; otherwise raw requests suffice
+Ensure ffmpeg/ffprobe are on PATH (already used by existing scripts).
+
+--------------------------------------------------------------------------------
+ 8. OPEN QUESTIONS (to confirm before coding)
+--------------------------------------------------------------------------------
+1. LLM provider — OpenAI-compatible, local Ollama, or other? (affects configure.json).
+2. Vision API for image description — same provider as LLM, or a separate
+   ComfyUI vision node?
+3. Audio upload for infinit_API.json — confirm we should upload each segment
+   via ComfyUI /upload/audio and set node "171" inputs.audio to the returned
+   name (VHS_LoadAudioUpload expects an uploaded file).
+4. Video length per segment — workflow length=81 @25fps ≈ 3.2s. For longer
+   segments: chain multiple WanInfiniteTalkToVideo blocks (workflow has
+   several), OR keep Stage 5 segments <=3.2s? (Plan item 5 max_segment_sec=20
+   implies chaining is needed.)
+5. Multi-angle image count — qwen_multi_camera.json outputs 4 angles; all 4
+   per input, or user-selectable subset?
+6. Pose pairing — confirm pose_inputs images must share the exact same
+   basename as img_inputs images (Plan item 6 states "same name images").
+7. Rashed voice model path & ultimate-rvc invocation — keep exactly as in
+   2_Audio_separator.py, or expose params in configure.json? (plan assumes
+   configurable.)
+
+--------------------------------------------------------------------------------
+ 9. EXECUTION ORDER SUMMARY
+--------------------------------------------------------------------------------
+ 1. Theme         -> theme_expanded.json
+ 2. Input Images  -> image_prompts.json (per-image final prompt)
+ 3. YouTube       -> outputs/yt_audio.wav
+ 4. Vocal Swap    -> outputs/<converted>.wav
+ 5. Segment       -> AudioSegments/segment_*.wav
+ 6. Pose Change   -> generated_imgs/<name>.png        (per img/pose pair)
+ 7. Multi-Angle   -> generated_img_vdo/<name>_angle_*.png
+ 8. Video Gen     -> Generated_VDO/segment_NN.mp4      (per audio segment)
+ [free_memory() between every ComfyUI job; 10s status polling; full error logs]
+
+================================================================================
+ END OF PLAN
+================================================================================

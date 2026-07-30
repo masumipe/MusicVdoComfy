@@ -1,0 +1,270 @@
+[32m[INFO][0m setup plugin alembic.autogenerate.schemas
+[32m[INFO][0m setup plugin alembic.autogenerate.tables
+[32m[INFO][0m setup plugin alembic.autogenerate.types
+[32m[INFO][0m setup plugin alembic.autogenerate.constraints
+[32m[INFO][0m setup plugin alembic.autogenerate.defaults
+[32m[INFO][0m setup plugin alembic.autogenerate.comments
+[32m[INFO][0m Adding extra search path audio_encoders D:\comfyUI\models\audio_encoders
+[32m[INFO][0m Adding extra search path background_removal D:\comfyUI\models\background_removal
+[32m[INFO][0m Adding extra search path checkpoints D:\comfyUI\models\checkpoints
+[32m[INFO][0m Adding extra search path clip D:\comfyUI\models\clip
+[32m[INFO][0m Adding extra search path clip_vision D:\comfyUI\models\clip_vision
+[32m[INFO][0m Adding extra search path configs D:\comfyUI\models\configs
+[32m[INFO][0m Adding extra search path controlnet D:\comfyUI\models\controlnet
+[32m[INFO][0m Adding extra search path detection D:\comfyUI\models\detection
+[32m[INFO][0m Adding extra search path diffusers D:\comfyUI\models\diffusers
+[32m[INFO][0m Adding extra search path diffusion_models D:\comfyUI\models\diffusion_models
+[32m[INFO][0m Adding extra search path embeddings D:\comfyUI\models\embeddings
+[32m[INFO][0m Adding extra search path facebook D:\comfyUI\models\facebook
+[32m[INFO][0m Adding extra search path facedetection D:\comfyUI\models\facedetection
+[32m[INFO][0m Adding extra search path facerestore_models D:\comfyUI\models\facerestore_models
+[32m[INFO][0m Adding extra search path face_parsing D:\comfyUI\models\face_parsing
+[32m[INFO][0m Adding extra search path frame_interpolation D:\comfyUI\models\frame_interpolation
+[32m[INFO][0m Adding extra search path gligen D:\comfyUI\models\gligen
+[32m[INFO][0m Adding extra search path hypernetworks D:\comfyUI\models\hypernetworks
+[32m[INFO][0m Adding extra search path insightface D:\comfyUI\models\insightface
+[32m[INFO][0m Adding extra search path instantid D:\comfyUI\models\instantid
+[32m[INFO][0m Adding extra search path ipadapter D:\comfyUI\models\ipadapter
+[32m[INFO][0m Adding extra search path latent_upscale_models D:\comfyUI\models\latent_upscale_models
+[32m[INFO][0m Adding extra search path layer_model D:\comfyUI\models\layer_model
+[32m[INFO][0m Adding extra search path llm D:\comfyUI\models\LLM
+[32m[INFO][0m Adding extra search path loras D:\comfyUI\models\loras
+[32m[INFO][0m Adding extra search path mediapipe D:\comfyUI\models\mediapipe
+[32m[INFO][0m Adding extra search path model_patches D:\comfyUI\models\model_patches
+[32m[INFO][0m Adding extra search path nsfw_detector D:\comfyUI\models\nsfw_detector
+[32m[INFO][0m Adding extra search path onnx D:\comfyUI\models\onnx
+[32m[INFO][0m Adding extra search path optical_flow D:\comfyUI\models\optical_flow
+[32m[INFO][0m Adding extra search path photomaker D:\comfyUI\models\photomaker
+[32m[INFO][0m Adding extra search path pose D:\comfyUI\models\pose
+[32m[INFO][0m Adding extra search path pulid D:\comfyUI\models\pulid
+[32m[INFO][0m Adding extra search path qwen-tts D:\comfyUI\models\qwen-tts
+[32m[INFO][0m Adding extra search path reactor D:\comfyUI\models\reactor
+[32m[INFO][0m Adding extra search path rembg D:\comfyUI\models\rembg
+[32m[INFO][0m Adding extra search path rmbg D:\comfyUI\models\RMBG
+[32m[INFO][0m Adding extra search path sam2 D:\comfyUI\models\sam2
+[32m[INFO][0m Adding extra search path sam3 D:\comfyUI\models\sam3
+[32m[INFO][0m Adding extra search path sams D:\comfyUI\models\sams
+[32m[INFO][0m Adding extra search path seedvr2 D:\comfyUI\models\SEEDVR2
+[32m[INFO][0m Adding extra search path style_models D:\comfyUI\models\style_models
+[32m[INFO][0m Adding extra search path text_encoders D:\comfyUI\models\text_encoders
+[32m[INFO][0m Adding extra search path ultralytics D:\comfyUI\models\ultralytics
+[32m[INFO][0m Adding extra search path unet D:\comfyUI\models\unet
+[32m[INFO][0m Adding extra search path upscale_models D:\comfyUI\models\upscale_models
+[32m[INFO][0m Adding extra search path vae D:\comfyUI\models\vae
+[32m[INFO][0m Adding extra search path vae_approx D:\comfyUI\models\vae_approx
+[32m[INFO][0m Adding extra search path yolo D:\comfyUI\models\yolo
+[32m[INFO][0m 
+Prestartup times for custom nodes:
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\rgthree-comfy
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-Easy-Use
+[32m[INFO][0m    7.2 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-manager
+[32m[INFO][0m 
+[1m[33m[WARNING][0m WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+[32m[INFO][0m Found comfy_kitchen backend cuda: {'available': True, 'disabled': True, 'unavailable_reason': None, 'capabilities': ['adaln', 'apply_rope', 'apply_rope1', 'apply_rope_split_half', 'apply_rope_split_half1', 'dequantize_int8_convrot_weight', 'dequantize_int8_convrot_weight_dtype', 'dequantize_int8_simple', 'dequantize_int8_simple_dtype', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'gemv_awq_w4a16', 'int8_linear', 'quantize_and_rotate_rowwise', 'quantize_int8_convrot_weight', 'quantize_int8_rowwise', 'quantize_int8_tensorwise', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'quantize_svdquant_w4a4', 'scaled_mm_nvfp4', 'scaled_mm_svdquant_w4a4', 'stochastic_rounding_fp8']}
+[32m[INFO][0m Found comfy_kitchen backend triton: {'available': True, 'disabled': True, 'unavailable_reason': None, 'capabilities': ['adaln', 'apply_rope', 'apply_rope1', 'apply_rope_split_half', 'apply_rope_split_half1', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'int8_linear', 'quantize_and_rotate_rowwise', 'quantize_int8_rowwise', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8']}
+[32m[INFO][0m Found comfy_kitchen backend eager: {'available': True, 'disabled': False, 'unavailable_reason': None, 'capabilities': ['adaln', 'apply_rope', 'apply_rope1', 'apply_rope_split_half', 'apply_rope_split_half1', 'dequantize_int8_convrot_weight', 'dequantize_int8_convrot_weight_dtype', 'dequantize_int8_simple', 'dequantize_int8_simple_dtype', 'dequantize_mxfp8', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'gemv_awq_w4a16', 'int8_linear', 'quantize_and_rotate_rowwise', 'quantize_int8_convrot_weight', 'quantize_int8_rowwise', 'quantize_int8_tensorwise', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'quantize_svdquant_w4a4', 'scaled_mm_mxfp8', 'scaled_mm_nvfp4', 'scaled_mm_svdquant_w4a4', 'stochastic_rounding_fp8']}
+[32m[INFO][0m Checkpoint files will always be loaded safely.
+[32m[INFO][0m Total VRAM 16311 MB, total RAM 32536 MB
+[32m[INFO][0m pytorch version: 2.8.0+cu128
+[32m[INFO][0m Set vram state to: NORMAL_VRAM
+[32m[INFO][0m Device: cuda:0 NVIDIA GeForce RTX 5060 Ti : cudaMallocAsync
+[32m[INFO][0m Using async weight offloading with 2 streams
+[32m[INFO][0m Enabled pinned memory 13014.0
+[32m[INFO][0m Using pytorch attention
+aimdo: src-win/cuda-detour.c:38:INFO:aimdo_setup_hooks: installing 6 hooks
+aimdo: src-win/cuda-detour.c:28:DEBUG:install_hook_entries: hooks successfully installed
+aimdo: src-win/shmem-detect.c:80:INFO:comfy-aimdo WDDM adapter match: NVIDIA GeForce RTX 5060 Ti runtime_luid=00000000:00014ba3 dxgi_luid=00000000:00014ba3
+aimdo: src/control.c:248:INFO:comfy-aimdo inited for GPU: NVIDIA GeForce RTX 5060 Ti (VRAM: 16310 MB)
+[32m[INFO][0m DynamicVRAM support detected and enabled
+[32m[INFO][0m Python version: 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+[32m[INFO][0m ComfyUI version: 0.27.0
+[32m[INFO][0m comfy-aimdo version: 0.4.10
+[32m[INFO][0m comfy-kitchen version: 0.2.16
+[32m[INFO][0m comfyui-frontend-package version: 1.45.20
+[32m[INFO][0m comfyui-workflow-templates version: 0.11.1
+[32m[INFO][0m comfyui-embedded-docs version: 0.5.6
+[32m[INFO][0m comfy-kitchen version: 0.2.16
+[32m[INFO][0m comfy-aimdo version: 0.4.10
+[32m[INFO][0m [Prompt Server] web root: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\python_embeded\Lib\site-packages\comfyui_frontend_package\static
+[32m[INFO][0m Asset seeder disabled
+[32m[INFO][0m No OpenGL_accelerate module loaded: No module named 'OpenGL_accelerate'
+[FishAudioS2] Models folder registered: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\models\fishaudioS2
+[FishAudioS2] Registered 4 nodes (v0.5.3): Fish S2 TTS, Fish S2 Voice Clone TTS, Fish S2 Multi-Speaker TTS, Fish S2 Multi-Speaker Split TTS
+[32m[INFO][0m ComfyUI-GGUF: Allowing full torch compile
+[32m[INFO][0m ### Loading: ComfyUI-Impact-Pack (V8.28.3)
+[1m[33m[WARNING][0m [Impact Pack] custom_wildcards path not found: D:\Others\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-impact-pack\custom_wildcards. Using default path.
+[32m[INFO][0m [Impact Pack] Wildcard total size (0.00 MB) is within cache limit (50.00 MB). Using full cache mode.
+[32m[INFO][0m [Impact Pack] Wildcards loading done.
+[32m[INFO][0m ### Loading: ComfyUI-Manager (V3.41)
+[32m[INFO][0m [ComfyUI-Manager] network_mode: public
+[32m[INFO][0m [ComfyUI-Manager] ComfyUI per-queue preview override detected (PR #11261). Manager's preview method feature is disabled. Use ComfyUI's --preview-method CLI option or 'Settings > Execution > Live preview method'.
+[32m[INFO][0m ### ComfyUI Revision: 5522 [bb131be9] *DETACHED | Released on '2026-06-30'
+[32m[INFO][0m ======================================== ComfyUI-nunchaku Initialization ========================================
+[32m[INFO][0m Nunchaku version: 1.2.1
+[32m[INFO][0m ComfyUI-nunchaku version: 1.2.1
+[32m[INFO][0m [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/alter-list.json
+[32m[INFO][0m [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/model-list.json
+[32m[INFO][0m [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/github-stats.json
+[32m[INFO][0m [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/extension-node-map.json
+[32m[INFO][0m [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json
+[1m[33m[WARNING][0m Traceback (most recent call last):
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\nodes.py", line 2246, in load_custom_node
+    module_spec.loader.exec_module(module)
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-nunchaku\__init__.py", line 119, in <module>
+    from .nodes.models.pulid import (
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-nunchaku\nodes\models\pulid.py", line 20, in <module>
+    from nunchaku.pipeline.pipeline_flux_pulid import PuLIDPipeline
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\python_embeded\Lib\site-packages\nunchaku\pipeline\__init__.py", line 2, in <module>
+    from .pipeline_flux_pulid import PuLIDFluxPipeline
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\python_embeded\Lib\site-packages\nunchaku\pipeline\pipeline_flux_pulid.py", line 18, in <module>
+    import insightface
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\python_embeded\Lib\site-packages\insightface\__init__.py", line 18, in <module>
+    from . import app
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\python_embeded\Lib\site-packages\insightface\app\__init__.py", line 2, in <module>
+    from .mask_renderer import *
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\python_embeded\Lib\site-packages\insightface\app\mask_renderer.py", line 8, in <module>
+    from ..thirdparty import face3d
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\python_embeded\Lib\site-packages\insightface\thirdparty\face3d\__init__.py", line 3, in <module>
+    from . import mesh
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\python_embeded\Lib\site-packages\insightface\thirdparty\face3d\mesh\__init__.py", line 9, in <module>
+    from .cython import mesh_core_cython
+  File "insightface\\thirdparty\\face3d\\mesh\\cython\\mesh_core_cython.pyx", line 1, in init insightface.thirdparty.face3d.mesh.cython.mesh_core_cython
+ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject
+
+[1m[33m[WARNING][0m Cannot import D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-nunchaku module for custom nodes: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject
+D:\Myfiles\Comfyui\ComfyUI-Easy-Install\python_embeded\Lib\site-packages\timm\models\layers\__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui_controlnet_aux] | INFO -> Using ckpts path: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui_controlnet_aux\ckpts
+[D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui_controlnet_aux] | INFO -> Using symlinks: False
+[D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui_controlnet_aux] | INFO -> Using ort providers: ['CUDAExecutionProvider', 'DirectMLExecutionProvider', 'OpenVINOExecutionProvider', 'ROCMExecutionProvider', 'CPUExecutionProvider', 'CoreMLExecutionProvider']
+[comfyui_ryanontheinside.acestep] [ACE-Step Patches] Patched resolve_areas_and_cond_masks_multidim for 1D latent support
+[comfyui_ryanontheinside.acestep] [ACE-Step Patches] Patched comfy.utils.reshape_mask for 1D latent support
+'sox' is not recognized as an internal or external command,
+operable program or batch file.
+[1m[33m[WARNING][0m SoX could not be found!
+
+    If you do not have SoX, proceed here:
+     - - - http://sox.sourceforge.net/ - - -
+
+    If you do (or think that you should) have SoX, double-check your
+    path variables.
+    
+[32m[INFO][0m ======================================== Stand-In ========================================
+[32m[INFO][0m Successfully loaded all Stand-In nodes.
+[32m[INFO][0m ==========================================================================================
+[32m[INFO][0m 
+Import times for custom nodes:
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\websocket_image_save.py
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\qweneditutils
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-BRIA_AI-RMBG
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-qwenmultiangle
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-TiledDiffusion
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-longlook
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-Krea2T-Enhancer
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-inpaint-cropandstitch
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-SCAIL-Pose
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\cg-use-everywhere
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-GGUF
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui_essentials
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-various
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-WanAnimatePreprocess
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-MelBandRoFormer
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-segment-anything-2
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\gguf
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-frame-interpolation
+[32m[INFO][0m    0.0 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\controlaltai-nodes
+[32m[INFO][0m    0.1 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\rgthree-comfy
+[32m[INFO][0m    0.1 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-kjnodes
+[32m[INFO][0m    0.1 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui_controlnet_aux
+[32m[INFO][0m    0.1 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-Pixaroma
+[32m[INFO][0m    0.2 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-Easy-Use
+[32m[INFO][0m    0.2 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-impact-pack
+[32m[INFO][0m    0.3 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\qwen3-tts-comfyui
+[32m[INFO][0m    0.3 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-QwenVL
+[32m[INFO][0m    0.3 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\Stand-In_Preprocessor_ComfyUI
+[32m[INFO][0m    0.4 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui_layerstyle
+[32m[INFO][0m    0.4 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-ollama
+[32m[INFO][0m    0.4 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui_ryanonyheinside
+[32m[INFO][0m    0.5 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-WanVideoWrapper
+[32m[INFO][0m    0.5 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-itools
+[32m[INFO][0m    0.6 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-florence2
+[32m[INFO][0m    0.6 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\openai-api
+[32m[INFO][0m    0.6 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-easy-sam3
+[32m[INFO][0m    0.7 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-Crystools
+[32m[INFO][0m    0.8 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-videohelpersuite
+[32m[INFO][0m    0.9 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\seedvr2_videoupscaler
+[32m[INFO][0m    1.2 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-manager
+[32m[INFO][0m    1.2 seconds (IMPORT FAILED): D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-nunchaku
+[32m[INFO][0m    1.3 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\comfyui-rmbg
+[32m[INFO][0m    1.8 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-fish-audio-s2
+[32m[INFO][0m    9.2 seconds: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ace-step
+[32m[INFO][0m 
+[32m[INFO][0m Context impl SQLiteImpl.
+[32m[INFO][0m Will assume non-transactional DDL.
+[32m[INFO][0m Using RAM pressure cache.
+[32m[INFO][0m Starting server
+
+[32m[INFO][0m To see the GUI go to: http://127.0.0.1:8188
+[1m[33m[WARNING][0m [DEPRECATION WARNING] Detected import of deprecated legacy API: /scripts/ui/components/buttonGroup.js. This is likely caused by a custom node extension using outdated APIs. Please update your extensions or contact the extension author for an updated version.
+[1m[33m[WARNING][0m [DEPRECATION WARNING] Detected import of deprecated legacy API: /scripts/ui.js. This is likely caused by a custom node extension using outdated APIs. Please update your extensions or contact the extension author for an updated version.
+[1m[33m[WARNING][0m [DEPRECATION WARNING] Detected import of deprecated legacy API: /extensions/core/clipspace.js. This is likely caused by a custom node extension using outdated APIs. Please update your extensions or contact the extension author for an updated version.
+[1m[33m[WARNING][0m [DEPRECATION WARNING] Detected import of deprecated legacy API: /extensions/core/groupNode.js. This is likely caused by a custom node extension using outdated APIs. Please update your extensions or contact the extension author for an updated version.
+[1m[33m[WARNING][0m [DEPRECATION WARNING] Detected import of deprecated legacy API: /extensions/core/widgetInputs.js. This is likely caused by a custom node extension using outdated APIs. Please update your extensions or contact the extension author for an updated version.
+[1m[31m[ERROR][0m [ERROR] An error occurred while retrieving information for the 'ACELoRALoader' node.
+[1m[31m[ERROR][0m Traceback (most recent call last):
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\server.py", line 773, in get_object_info
+    out[x] = node_info(x)
+             ^^^^^^^^^^^^
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\server.py", line 722, in node_info
+    info['input'] = obj_class.INPUT_TYPES()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ace-step\ace_step_nodes.py", line 326, in INPUT_TYPES
+    models = [name for name in os.listdir(loras_path) if not name.startswith(".")]
+                               ^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [WinError 3] The system cannot find the path specified: 'D:\\Myfiles\\Comfyui\\ComfyUI-Easy-Install\\ComfyUI\\models\\TTS\\ACE-Step-v1-3.5B\\loras'
+
+[1m[31m[ERROR][0m [ERROR] An error occurred while retrieving information for the 'ACEModelLoader' node.
+[1m[31m[ERROR][0m Traceback (most recent call last):
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\server.py", line 773, in get_object_info
+    out[x] = node_info(x)
+             ^^^^^^^^^^^^
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\server.py", line 722, in node_info
+    info['input'] = obj_class.INPUT_TYPES()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ace-step\ace_step_nodes.py", line 190, in INPUT_TYPES
+    models = [name for name in os.listdir(model_path) if os.path.isdir(os.path.join(model_path, name)) and not name.startswith(".")]
+                               ^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [WinError 3] The system cannot find the path specified: 'D:\\Myfiles\\Comfyui\\ComfyUI-Easy-Install\\ComfyUI\\models\\TTS\\ACE-Step-v1-3.5B'
+
+[1m[33m[WARNING][0m [DEPRECATION WARNING] Detected import of deprecated legacy API: /scripts/ui/components/button.js. This is likely caused by a custom node extension using outdated APIs. Please update your extensions or contact the extension author for an updated version.
+[32m[INFO][0m got prompt
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.bfloat16
+[32m[INFO][0m Found quantization metadata version 1
+[32m[INFO][0m Using MixedPrecisionOps for text encoder
+[32m[INFO][0m CLIP/text encoder model load device: cuda:0, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m Requested to load WanVAE
+[32m[INFO][0m Model WanVAE prepared for dynamic VRAM loading. 241MB Staged. 0 patches attached. Force pre-loaded 60 weights: 61 KB.
+[32m[INFO][0m Model WanVAE prepared for dynamic VRAM loading. 241MB Staged. 0 patches attached. Force pre-loaded 60 weights: 61 KB.
+[32m[INFO][0m Requested to load QwenImageTEModel_
+[32m[INFO][0m Model QwenImageTEModel_ prepared for dynamic VRAM loading. 7910MB Staged. 0 patches attached. Force pre-loaded 122 weights: 561 KB.
+[32m[INFO][0m Model WanVAE prepared for dynamic VRAM loading. 241MB Staged. 0 patches attached. Force pre-loaded 60 weights: 61 KB.
+[32m[INFO][0m Model WanVAE prepared for dynamic VRAM loading. 241MB Staged. 0 patches attached. Force pre-loaded 60 weights: 61 KB.
+[32m[INFO][0m Model QwenImageTEModel_ prepared for dynamic VRAM loading. 7910MB Staged. 0 patches attached. Force pre-loaded 122 weights: 561 KB.
+[32m[INFO][0m Found quantization metadata version 1
+[32m[INFO][0m Detected mixed precision quantization
+[32m[INFO][0m Using mixed precision operations
+[32m[INFO][0m Native ops: float8_e5m2, nvfp4, float8_e4m3fn, int8_tensorwise , emulated ops: mxfp8
+[32m[INFO][0m model weight dtype torch.bfloat16, manual cast: torch.bfloat16
+[32m[INFO][0m model_type FLUX
+[32m[INFO][0m Requested to load QwenImage
+[32m[INFO][0m Model QwenImage prepared for dynamic VRAM loading. 19582MB Staged. 720 patches attached. Force pre-loaded 1080 weights: 74 KB.
+  0%|          | 0/4 [00:00<?, ?it/s]  0%|          | 0/4 [00:00<?, ?it/s,   Model Initializing ...  ]  0%|          | 0/4 [01:38<?, ?it/s,  Model Initialization complete!  ] 25%|██▌       | 1/4 [01:38<04:55, 98.51s/it,  Model Initialization complete!  ][32m[INFO][0m [ComfyUI-Manager] default cache updated: https://api.comfy.org/nodes
+[32m[INFO][0m [ComfyUI-Manager] All startup tasks have been completed.
+ 25%|██▌       | 1/4 [00:24<04:55, 98.51s/it]                                    50%|█████     | 2/4 [00:24<00:24, 12.18s/it] 75%|███████▌  | 3/4 [00:32<00:07,  7.91s/it]100%|██████████| 4/4 [00:40<00:00,  7.89s/it]100%|██████████| 4/4 [00:40<00:00, 10.04s/it]
+[32m[INFO][0m 0 models unloaded.
+[32m[INFO][0m Model WanVAE prepared for dynamic VRAM loading. 241MB Staged. 0 patches attached. Force pre-loaded 60 weights: 61 KB.
+[32m[INFO][0m [32mPrompt executed in 159.30 seconds[0m

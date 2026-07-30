@@ -1,0 +1,82 @@
+[START] Security scan
+[DONE] Security scan
+## ComfyUI-Manager: installing dependencies done.
+** ComfyUI startup time: 2026-07-19 11:30:49.743
+** Platform: Windows
+** Python version: 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+** Python executable: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\python_embeded\python.exe
+** ComfyUI Path: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI
+** ComfyUI Base Folder Path: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI
+** User directory: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\user
+** ComfyUI-Manager config path: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\user\__manager\config.ini
+** Log path: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\user\comfyui.log
+[Crystools [0;32mINFO[0m] Crystools version: 1.27.4
+[Crystools [0;32mINFO[0m] Platform release: 11
+[Crystools [0;32mINFO[0m] JETSON: Not detected.
+[Crystools [0;32mINFO[0m] CPU: Intel(R) Core(TM) i5-14600K - Arch: AMD64 - OS: Windows 11
+[Crystools [0;32mINFO[0m] pynvml (NVIDIA) initialized.
+[Crystools [0;32mINFO[0m] GPU/s:
+[Crystools [0;32mINFO[0m] 0) NVIDIA GeForce RTX 5060 Ti
+[Crystools [0;32mINFO[0m] NVIDIA Driver: 610.62
+[ComfyUI-Easy-Use] server: v1.3.7 Loaded
+[ComfyUI-Easy-Use] web root: D:\Myfiles\Comfyui\ComfyUI-Easy-Install\ComfyUI\custom_nodes\ComfyUI-Easy-Use\web_version/v2 Loaded
+â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+  Pixaroma v1.4.23  |  52 nodes Loaded
+  ComfyUI Tutorials: https://www.youtube.com/@pixaroma
+  This is a notice, not an error. All Pixaroma nodes work in both Classic and Nodes 2.0 mode.
+  If something looks off right after switching the Node UI mode, hard-refresh the page (Ctrl+Shift+R).
+â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+[ComfyUI-RMBG] v3.0.0 | 43 nodes Loaded
+DWPose: Onnxruntime with acceleration providers detected
+RYAN ON THE INSIDE - Custom Nodes Loaded
+[RyanOnTheInside] Copying extension file: widget_hotkey.js
+Checking for AdvancedLivePortrait at: None
+Checking for Advanced-ControlNet at: None
+Checking for AnimateDiff-Evolved at: None
+ComfyUI-AdvancedLivePortrait not found. FlexExpressionEditor will not be available. Install ComfyUI-AdvancedLivePortrait and restart ComfyUI.
+ComfyUI-Advanced-ControlNet not found. Advanced-ControlNet feature nodes will not be available. Install ComfyUI-Advanced-ControlNet and restart ComfyUI.
+ComfyUI-AnimateDiff-Evolved not found. AnimateDiff feature nodes will not be available. Install ComfyUI-AnimateDiff-Evolved and restart ComfyUI.
+
+Initializing ControlAltAI Nodes
+FETCH ComfyRegistry Data: 5/162
+âœ… ComfyUI-Qwen-TTS v1.0.7 loaded
+
+[rgthree-comfy] Loaded 48 magnificent nodes. ðŸŽ‰
+
+[rgthree-comfy] ComfyUI's new Node 2.0 rendering may be incompatible with some rgthree-comfy nodes and features, breaking some rendering as well as losing the ability to access a node's properties (a vital part of many nodes). It also appears to run MUCH more slowly spiking CPU usage and causing jankiness and unresponsiveness, especially with large workflows. Personally I am not planning to use the new Nodes 2.0 and, unfortunately, am not able to invest the time to investigate and overhaul rgthree-comfy where needed. If you have issues when Nodes 2.0 is enabled, I'd urge you to switch it off as well and join me in hoping ComfyUI is not planning to deprecate the existing, stable canvas rendering all together.
+
+âš¡ SeedVR2 optimizations check: SageAttention âœ… | Flash Attention âœ… | Triton âœ…
+ðŸ“Š Initial CUDA memory: 14.76GB free / 15.93GB total
+FETCH ComfyRegistry Data: 10/162
+FETCH ComfyRegistry Data: 15/162
+FETCH ComfyRegistry Data: 20/162
+FETCH ComfyRegistry Data: 25/162
+FETCH ComfyRegistry Data: 30/162
+FETCH ComfyRegistry Data: 35/162
+FETCH ComfyRegistry Data: 40/162
+FETCH ComfyRegistry Data: 45/162
+FETCH ComfyRegistry Data: 50/162
+FETCH ComfyRegistry Data: 55/162
+FETCH ComfyRegistry Data: 60/162
+FETCH ComfyRegistry Data: 65/162
+FETCH ComfyRegistry Data: 70/162
+FETCH ComfyRegistry Data: 75/162
+FETCH ComfyRegistry Data: 80/162
+FETCH ComfyRegistry Data: 85/162
+FETCH ComfyRegistry Data: 90/162
+FETCH ComfyRegistry Data: 95/162
+FETCH ComfyRegistry Data: 100/162
+FETCH ComfyRegistry Data: 105/162
+FETCH ComfyRegistry Data: 110/162
+FETCH ComfyRegistry Data: 115/162
+FETCH ComfyRegistry Data: 120/162
+FETCH ComfyRegistry Data: 125/162
+FETCH ComfyRegistry Data: 130/162
+FETCH ComfyRegistry Data: 135/162
+FETCH ComfyRegistry Data: 140/162
+FETCH ComfyRegistry Data: 145/162
+FETCH ComfyRegistry Data: 150/162
+FETCH ComfyRegistry Data: 155/162
+FETCH ComfyRegistry Data: 160/162
+FETCH ComfyRegistry Data [DONE]
+FETCH DATA from: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json [DONE]

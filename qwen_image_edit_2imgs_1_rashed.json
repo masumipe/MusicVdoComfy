@@ -1,0 +1,273 @@
+{
+  "3": {
+    "inputs": {
+      "seed": 296237726743600,
+      "steps": 4,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "25",
+        0
+      ],
+      "positive": [
+        "36",
+        0
+      ],
+      "negative": [
+        "33",
+        0
+      ],
+      "latent_image": [
+        "58",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "8": {
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "28",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "9": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "24": {
+    "inputs": {
+      "unet_name": "qwen\\qwenImageEdit2511.b0pb.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "25": {
+    "inputs": {
+      "lora_name": "qwen2511\\Qwen-Image-Edit-2511-Lightning-4steps-V1.0-fp32.safetensors",
+      "strength_model": 1,
+      "model": [
+        "40",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "27": {
+    "inputs": {
+      "image": [
+        "78",
+        0
+      ]
+    },
+    "class_type": "FluxKontextImageScale",
+    "_meta": {
+      "title": "FluxKontextImageScale"
+    }
+  },
+  "28": {
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "30": {
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "31": {
+    "inputs": {
+      "pixels": [
+        "27",
+        0
+      ],
+      "vae": [
+        "28",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "32": {
+    "inputs": {
+      "grow_mask_by": 6,
+      "vae": [
+        "28",
+        0
+      ]
+    },
+    "class_type": "VAEEncodeForInpaint",
+    "_meta": {
+      "title": "VAE Encode (for Inpainting)"
+    }
+  },
+  "33": {
+    "inputs": {
+      "prompt": "ugly, deformed limb, six fingers, multiple instruments, sun glass, plastic like skin, robot, robotic skin, robotic look, robotic hands, robtic hair, robotic face",
+      "clip": [
+        "30",
+        0
+      ],
+      "vae": [
+        "28",
+        0
+      ],
+      "image1": [
+        "27",
+        0
+      ],
+      "image2": [
+        "53",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus"
+    }
+  },
+  "36": {
+    "inputs": {
+      "prompt": "Edit the images by performing a seamless composite of the following elements:\nPrimary Subject (from Picture 1):** Use the man's face, his hairstyle, and his head shape exactly as they appear.\nPhysique and Attire (from Picture 1):** Retain his current physique and his white, patterned kurta.\nPose and Hands (from Picture 2: Keep his hands clasped in front of him as shown in Picture 2.\nBackground (from Picture 2): Use the boat and the water and the surroundings.\nAction (from Picture 2): In the hands of the man from Picture 1, add a detailed, rustic wooden music instrument, like the one he is playing in Picture 2. He should be holding it in a natural, ready-to-play posture, as if beginning to play music with holding the upper part of the instrument in one hand and place other hand on lower part the string tucking finger on string.\nStyle: Natural skitn, natural tone, photorealistic, cinematic",
+      "clip": [
+        "30",
+        0
+      ],
+      "vae": [
+        "28",
+        0
+      ],
+      "image1": [
+        "27",
+        0
+      ],
+      "image2": [
+        "53",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "TextEncodeQwenImageEditPlus (Positive)"
+    }
+  },
+  "39": {
+    "inputs": {
+      "shift": 3,
+      "model": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "ModelSamplingAuraFlow"
+    }
+  },
+  "40": {
+    "inputs": {
+      "strength": 1,
+      "pre_cfg": false,
+      "model": [
+        "39",
+        0
+      ]
+    },
+    "class_type": "CFGNorm",
+    "_meta": {
+      "title": "CFGNorm"
+    }
+  },
+  "52": {
+    "inputs": {
+      "image": "1.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "53": {
+    "inputs": {
+      "image": [
+        "52",
+        0
+      ]
+    },
+    "class_type": "FluxKontextImageScale",
+    "_meta": {
+      "title": "FluxKontextImageScale"
+    }
+  },
+  "58": {
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "EmptySD3LatentImage"
+    }
+  },
+  "68": {
+    "inputs": {
+      "text": "\nEdit the images by performing a seamless composite of the following elements:\n\nPrimary Subject (from Picture 1):** Use the man's face, his hairstyle, and his head shape exactly as they appear.\nPhysique and Attire (from Picture 1):** Retain his current physique and his white, patterned kurta.\nPose and Hands (from Picture 1): Keep his hands clasped in front of him as shown in Picture 1.\nBackground (from Picture 2): Use the plain wall and decorations as the backdrop.\nAction (from Picture 2): In the hands of the man from Picture 1, add a detailed, rustic wooden music instrument, like the one he is playing in Picture 2. He should be holding it in a natural, ready-to-play posture, as if beginning to play music.\n*   **Style:** Natural, photorealistic."
+    },
+    "class_type": "PixaromaText",
+    "_meta": {
+      "title": "Text Pixaroma"
+    }
+  },
+  "78": {
+    "inputs": {
+      "image": "2.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+pydub
+pywebview
+ffmpeg
+ffmpeg-python
+yt-dlp
+spleeter 
+tensorflow

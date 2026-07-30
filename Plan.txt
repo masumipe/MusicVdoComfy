@@ -1,0 +1,11 @@
+Please build a python based nicegui application with the following steps
+1. Select Theme Theme.txt. Themes should be processed through a LLM to generate detailed prompt and technical and other required elements
+3. Select and download Audio from youtube with 1_yt_dl.py (user provided)
+4. Extract and change Vocal with 2_Audio_separator.py
+6. Segment Audio by Silence with 3_SegmentAudio.p
+2. Select Input images from img_inputs folder. To get detailed description for the image the application shall use an api which shall be stored in the configure.json file. this description shall be blended with prompt from LLM 
+6. Change Pose with qwen_image_edit_2imgs_1_rashed.json where img_inputs and pose_inputs shall share same name images and qwen_image_edit_2imgs_1_rashed shall change the img_inputs image with pose from pose_inputs. Theme.txt shall be used for further augmentation along with LLM prompt and save the resultant images in generated_imgs. The workflow must keep character consistancy from the img_inuts images.
+7. Select MultiAngle qwen_multi_camera.json to generat images with different angles with images from generated_imgs D:\Myfiles\MusicVDOComfy\qwen_multi_camera.json and save to generated_img_vdo folder
+9. for each audio in D:\Myfiles\MusicVDOComfy\AudioSegments taking the audio length and audio and images from generated_img_vdo using and themes from LLM and workflow D:\Myfiles\MusicVDOComfy\infinit_API.json generate video and save to Generated_VDO
+10. The application must wait till the final generation of the video with 10 seconds for status check from comfyui. It shall also collect detailed error log.
+11. to prevent memory crushing it shall use the LLM and Comfyui cautously to free the memory at every stage.

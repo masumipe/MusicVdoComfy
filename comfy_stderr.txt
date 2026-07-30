@@ -1,0 +1,52 @@
+﻿[32m[INFO][0m setup plugin alembic.autogenerate.schemas
+[32m[INFO][0m setup plugin alembic.autogenerate.tables
+[32m[INFO][0m setup plugin alembic.autogenerate.types
+[32m[INFO][0m setup plugin alembic.autogenerate.constraints
+[32m[INFO][0m setup plugin alembic.autogenerate.defaults
+[32m[INFO][0m setup plugin alembic.autogenerate.comments
+[32m[INFO][0m Adding extra search path audio_encoders D:\comfyUI\models\audio_encoders
+[32m[INFO][0m Adding extra search path background_removal D:\comfyUI\models\background_removal
+[32m[INFO][0m Adding extra search path checkpoints D:\comfyUI\models\checkpoints
+[32m[INFO][0m Adding extra search path clip D:\comfyUI\models\clip
+[32m[INFO][0m Adding extra search path clip_vision D:\comfyUI\models\clip_vision
+[32m[INFO][0m Adding extra search path configs D:\comfyUI\models\configs
+[32m[INFO][0m Adding extra search path controlnet D:\comfyUI\models\controlnet
+[32m[INFO][0m Adding extra search path detection D:\comfyUI\models\detection
+[32m[INFO][0m Adding extra search path diffusers D:\comfyUI\models\diffusers
+[32m[INFO][0m Adding extra search path diffusion_models D:\comfyUI\models\diffusion_models
+[32m[INFO][0m Adding extra search path embeddings D:\comfyUI\models\embeddings
+[32m[INFO][0m Adding extra search path facebook D:\comfyUI\models\facebook
+[32m[INFO][0m Adding extra search path facedetection D:\comfyUI\models\facedetection
+[32m[INFO][0m Adding extra search path facerestore_models D:\comfyUI\models\facerestore_models
+[32m[INFO][0m Adding extra search path face_parsing D:\comfyUI\models\face_parsing
+[32m[INFO][0m Adding extra search path frame_interpolation D:\comfyUI\models\frame_interpolation
+[32m[INFO][0m Adding extra search path gligen D:\comfyUI\models\gligen
+[32m[INFO][0m Adding extra search path hypernetworks D:\comfyUI\models\hypernetworks
+[32m[INFO][0m Adding extra search path insightface D:\comfyUI\models\insightface
+[32m[INFO][0m Adding extra search path instantid D:\comfyUI\models\instantid
+[32m[INFO][0m Adding extra search path ipadapter D:\comfyUI\models\ipadapter
+[32m[INFO][0m Adding extra search path latent_upscale_models D:\comfyUI\models\latent_upscale_models
+[32m[INFO][0m Adding extra search path layer_model D:\comfyUI\models\layer_model
+[32m[INFO][0m Adding extra search path llm D:\comfyUI\models\LLM
+[32m[INFO][0m Adding extra search path loras D:\comfyUI\models\loras
+[32m[INFO][0m Adding extra search path mediapipe D:\comfyUI\models\mediapipe
+[32m[INFO][0m Adding extra search path model_patches D:\comfyUI\models\model_patches
+[32m[INFO][0m Adding extra search path nsfw_detector D:\comfyUI\models\nsfw_detector
+[32m[INFO][0m Adding extra search path onnx D:\comfyUI\models\onnx
+[32m[INFO][0m Adding extra search path optical_flow D:\comfyUI\models\optical_flow
+[32m[INFO][0m Adding extra search path photomaker D:\comfyUI\models\photomaker
+[32m[INFO][0m Adding extra search path pose D:\comfyUI\models\pose
+[32m[INFO][0m Adding extra search path pulid D:\comfyUI\models\pulid
+[32m[INFO][0m Adding extra search path qwen-tts D:\comfyUI\models\qwen-tts
+[32m[INFO][0m Adding extra search path reactor D:\comfyUI\models\reactor
+[32m[INFO][0m Adding extra search path rembg D:\comfyUI\models\rembg
+[32m[INFO][0m Adding extra search path rmbg D:\comfyUI\models\RMBG
+[32m[INFO][0m Adding extra search path sam2 D:\comfyUI\models\sam2
+[32m[INFO][0m Adding extra search path sam3 D:\comfyUI\models\sam3
+[32m[INFO][0m Adding extra search path sams D:\comfyUI\models\sams
+[32m[INFO][0m Adding extra search path seedvr2 D:\comfyUI\models\SEEDVR2
+[32m[INFO][0m Adding extra search path style_models D:\comfyUI\models\style_models
+[32m[INFO][0m Adding extra search path text_encoders D:\comfyUI\models\text_encoders
+[32m[INFO][0m Adding extra search path ultralytics D:\comfyUI\models\ultralytics
+[32m[INFO][0m Adding extra search path unet D:\comfyUI\models\unet
+
