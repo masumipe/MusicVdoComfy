@@ -1,0 +1,55 @@
+{
+  "llm": {
+    "provider": "openai",
+    "api_key": "",
+    "base_url": "https://api.openai.com/v1",
+    "theme_model": "gpt-4o-mini",
+    "vision_model": "gpt-4o",
+    "max_tokens": 800,
+    "temperature": 0.7
+  },
+  "comfyui": {
+    "host": "127.0.0.1",
+    "port": 8188,
+    "python_exe": "",
+    "main_py": "",
+    "args": ["--windows-standalone-build", "--use-sage-attention", "--enable-cors-header"],
+    "poll_interval_sec": 10,
+    "poll_timeout_sec": 1200,
+    "startup_wait_sec": 60
+  },
+  "paths": {
+    "root": ".",
+    "img_inputs": "img_inputs",
+    "pose_inputs": "pose_inputs",
+    "generated_imgs": "generated_imgs",
+    "generated_img_vdo": "generated_img_vdo",
+    "audio_segments": "AudioSegments",
+    "outputs": "outputs",
+    "final_videos": "Generated_VDO",
+    "logs": "logs"
+  },
+  "rvc": {
+    "ultimate_rvc_dir": "",
+    "voice_model": "Rashed_V_Model",
+    "n_octaves": 0,
+    "n_semitones": 0,
+    "f0_method": "rmvpe",
+    "index_rate": 0.3,
+    "rms_mix_rate": 1.0,
+    "protect_rate": 0.33
+  },
+  "segment": {
+    "min_sec": 5,
+    "max_sec": 20,
+    "silence_thresh_db": -45,
+    "min_silence_ms": 700,
+    "reduce_long_silences": true,
+    "target_silence_sec": 1.0
+  },
+  "video": {
+    "frame_rate": 25,
+    "max_frames_per_block": 81,
+    "chain_blocks": true
+  }
+}
