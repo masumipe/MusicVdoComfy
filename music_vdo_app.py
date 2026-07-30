@@ -15,10 +15,14 @@ from core.config import config
 from core.comfy_client import ComfyClient
 from core.memory import free_memory
 from core.logger import get_logger
+from core.llm_client import init_llm_from_config, get_llm_client, LLMClient
 
 
 # Initialize logger
 logger = get_logger()
+
+# Initialize LLM client
+llm_client = init_llm_from_config(config.config)
 
 # Global state
 class AppState:
@@ -26,6 +30,7 @@ class AppState:
         self.current_stage = 0
         self.is_running = False
         self.comfy_client: Optional[ComfyClient] = None
+        self.llm_client: Optional[LLMClient] = llm_client
         self.theme_expanded: Dict[str, Any] = {}
         self.image_prompts: Dict[str, Any] = {}
         self.audio_segments: List[str] = []
@@ -33,6 +38,15 @@ class AppState:
         self.generated_videos: List[str] = []
         self.status_badges: Dict[str, ui.badge] = {}
         self.log_messages: List[str] = []
+        # New state variables
+        self.selected_input_image: Optional[str] = None
+        self.selected_pose_image: Optional[str] = None
+        self.vocal_model: str = "Rashed_V_Model"
+        self.camera_view_count: int = 3
+        self.camera_degrees: List[float] = [0.0, 45.0, 90.0]
+        self.pose_additional_info: str = ""
+        self.video_additional_instruction: str = ""
+        self.youtube_url: str = ""
     
     def add_log(self, message: str):
         timestamp = datetime.now().strftime("%H:%M:%S")
@@ -189,11 +203,19 @@ def main_page():
                 
                 theme_result = ui.markdown('').classes('w-full mt-2 text-white')
         
-        # Stage 2: Input Images
+        # Stage 2: Input Images with upload and view
         with stages_container:
             with ui.card().classes('w-full p-4 bg-grey-800'):
                 ui.label('🖼️ Stage 2: Input Images').classes('text-lg font-bold text-white mb-2')
                 
+                # Image upload section
+                with ui.row().classes('w-full gap-2 mb-2'):
+                    ui.upload(
+                        max_files=10,
+                        accepted_types=['.png', '.jpg', '.jpeg', '.webp']
+                    ).on('uploaded', lambda e: handle_image_upload(e))
+                
+                # Image grid with selection
                 image_grid = ui.row().classes('w-full gap-2 flex-wrap')
                 
                 with ui.row().classes('gap-2 mt-2'):
@@ -206,6 +228,8 @@ def main_page():
                         '👁️ Describe Selected',
                         on_click=lambda: describe_images()
                     ).props('unelevated color=primary')
+                
+                selected_image_label = ui.label('No image selected').classes('text-sm text-grey-400')
         
         # Stage 3: YouTube Download
         with stages_container:
@@ -213,35 +237,128 @@ def main_page():
                 ui.label('📺 Stage 3: YouTube Audio Download').classes('text-lg font-bold text-white mb-2')
                 
                 with ui.row().classes('w-full gap-2'):
-                    url_input = ui.input(
+                    youtube_url_input = ui.input(
                         label='YouTube URL',
                         placeholder='https://youtube.com/watch?v=...'
                     ).classes('flex-1').props('dark outlined')
                     
                     ui.button(
                         '⬇️ Download',
-                        on_click=lambda: download_audio(url_input.value)
+                        on_click=lambda: download_audio(youtube_url_input.value)
                     ).props('unelevated color=primary')
                 
                 download_log = ui.log().classes('w-full h-32 bg-grey-900')
         
-        # Stage 4-8 placeholders (similar pattern)
-        for stage_num, stage_info in [
-            (4, '🎤 Vocal Swap', 'Run vocal separation and RVC voice conversion'),
-            (5, '✂️ Segment Audio', 'Split audio by silence detection'),
-            (6, '💃 Pose Change', 'Generate pose-modified images'),
-            (7, '🎬 Multi-Angle', 'Create multi-angle variations'),
-            (8, '🎥 Video Generation', 'Generate videos for each audio segment')
-        ]:
-            with stages_container:
-                with ui.card().classes('w-full p-4 bg-grey-800'):
-                    ui.label(f'{stage_info[0]} Stage {stage_num}: {stage_info[1]}').classes('text-lg font-bold text-white mb-2')
-                    ui.label(stage_info[2]).classes('text-grey-400')
+        # Stage 4: Vocal Swap with model selection
+        with stages_container:
+            with ui.card().classes('w-full p-4 bg-grey-800'):
+                ui.label('🎤 Stage 4: Vocal Swap').classes('text-lg font-bold text-white mb-2')
+                
+                with ui.row().classes('w-full gap-2 items-end'):
+                    vocal_model_input = ui.input(
+                        label='Vocal Model (for 2_Audio_separator.py)',
+                        value=state.vocal_model
+                    ).classes('flex-1').props('dark outlined')
                     
                     ui.button(
-                        '▶ Run Stage',
-                        on_click=lambda s=stage_num: run_single_stage(s)
-                    ).props('unelevated color=primary').classes('mt-2')
+                        '▶ Run Vocal Separation',
+                        on_click=lambda: run_vocal_swap(vocal_model_input.value)
+                    ).props('unelevated color=primary')
+                
+                ui.label('This will run 2_Audio_separator.py with the specified model').classes('text-sm text-grey-400')
+        
+        # Stage 5: Audio Segmentation
+        with stages_container:
+            with ui.card().classes('w-full p-4 bg-grey-800'):
+                ui.label('✂️ Stage 5: Audio Segmentation').classes('text-lg font-bold text-white mb-2')
+                ui.label('Split audio by silence detection').classes('text-grey-400')
+                
+                ui.button(
+                    '▶ Run Segmentation',
+                    on_click=lambda: run_single_stage(5)
+                ).props('unelevated color=primary').classes('mt-2')
+        
+        # Stage 6: Pose Change with image upload and additional info
+        with stages_container:
+            with ui.card().classes('w-full p-4 bg-grey-800'):
+                ui.label('💃 Stage 6: Pose Change').classes('text-lg font-bold text-white mb-2')
+                
+                # Pose image upload
+                with ui.row().classes('w-full gap-2 mb-2'):
+                    ui.upload(
+                        max_files=1,
+                        accepted_types=['.png', '.jpg', '.jpeg']
+                    ).on('uploaded', lambda e: handle_pose_upload(e))
+                
+                # Pose image preview
+                pose_preview = ui.image('').classes('w-32 h-32 object-cover rounded').style('display: none')
+                
+                with ui.row().classes('w-full gap-2'):
+                    pose_additional_info = ui.textarea(
+                        label='Additional Information for Pose-to-Image',
+                        placeholder='Describe how you want the pose to be applied...',
+                        value=state.pose_additional_info
+                    ).classes('flex-1').props('dark outlined')
+                    
+                    ui.button(
+                        '✨ Generate Instructions',
+                        on_click=lambda: generate_pose_instructions(pose_additional_info.value)
+                    ).props('unelevated color=primary')
+                
+                pose_result = ui.markdown('').classes('w-full mt-2 text-white')
+        
+        # Stage 7: Multi-Angle with camera view count and degrees
+        with stages_container:
+            with ui.card().classes('w-full p-4 bg-grey-800'):
+                ui.label('🎬 Stage 7: Multi-Angle View').classes('text-lg font-bold text-white mb-2')
+                
+                with ui.row().classes('w-full gap-4'):
+                    camera_view_count = ui.number(
+                        label='Camera View Count',
+                        value=state.camera_view_count,
+                        min=1,
+                        max=10
+                    ).props('dark outlined')
+                    
+                    camera_degrees_input = ui.input(
+                        label='Camera Degrees (comma-separated)',
+                        value=', '.join([str(d) for d in state.camera_degrees])
+                    ).classes('flex-1').props('dark outlined')
+                
+                with ui.row().classes('w-full gap-2 mt-2'):
+                    ui.button(
+                        '🔄 Calculate Angles',
+                        on_click=lambda: calculate_camera_angles(camera_view_count.value, camera_degrees_input.value)
+                    ).props('outlined color=primary')
+                    
+                    ui.button(
+                        '▶ Generate Multi-Angle',
+                        on_click=lambda: run_multi_angle(camera_view_count.value, camera_degrees_input.value)
+                    ).props('unelevated color=primary')
+        
+        # Stage 8: Video Generation with additional instructions
+        with stages_container:
+            with ui.card().classes('w-full p-4 bg-grey-800'):
+                ui.label('🎥 Stage 8: Video Generation').classes('text-lg font-bold text-white mb-2')
+                
+                video_instruction = ui.textarea(
+                    label='Additional Instructions for Image-to-Video',
+                    placeholder='Describe motion type, camera movement, etc.',
+                    value=state.video_additional_instruction
+                ).classes('w-full').props('dark outlined')
+                
+                with ui.row().classes('gap-2 mt-2'):
+                    ui.button(
+                        '✨ Enhance with LLM',
+                        on_click=lambda: enhance_video_instructions(video_instruction.value)
+                    ).props('outlined color=primary')
+                    
+                    ui.button(
+                        '▶ Generate Video',
+                        on_click=lambda: run_video_generation(video_instruction.value)
+                    ).props('unelevated color=primary')
+                
+                video_result = ui.markdown('').classes('w-full mt-2 text-white')
         
         # Stage 9: Logs
         with stages_container:
@@ -348,41 +465,84 @@ async def expand_theme(editor: ui.textarea):
     update_stage_badge('1_theme', 'running')
     
     try:
-        # TODO: Implement actual LLM call
-        await asyncio.sleep(2)  # Simulate API call
+        # Free memory before calling LLM (to prepare for ComfyUI later)
+        if state.comfy_client:
+            free_memory(state.comfy_client)
         
-        # Mock expansion for now
-        expanded = {
-            'prompt': editor.value + " - enhanced with cinematic lighting, dynamic camera angles",
-            'camera': 'Dynamic tracking shots with smooth transitions',
-            'style': 'Cinematic, vibrant colors, high contrast',
-            'negative': 'blurry, low quality, distorted',
-            'technical': 'Professional color grading, motion blur'
-        }
-        
-        state.theme_expanded = expanded
-        
-        result_text = f"""
+        # Use LLM client to enhance prompt
+        if state.llm_client:
+            expanded = state.llm_client.enhance_prompt(editor.value)
+            
+            if expanded:
+                state.theme_expanded = expanded
+                
+                result_text = f"""
 ### Expanded Theme
 
-**Prompt:** {expanded['prompt']}
+**Prompt:** {expanded.get('enhanced_prompt', expanded.get('prompt', ''))}
 
-**Camera:** {expanded['camera']}
+**Camera:** {expanded.get('camera', '')}
 
-**Style:** {expanded['style']}
+**Style:** {expanded.get('style', '')}
 
-**Negative Prompt:** {expanded['negative']}
+**Negative Prompt:** {expanded.get('negative', '')}
 
-**Technical:** {expanded['technical']}
+**Technical:** {expanded.get('technical', '')}
 """
-        ui.notify('Theme expanded successfully', type='positive')
-        add_log("✓ Theme expanded")
+                ui.notify('Theme expanded successfully', type='positive')
+                add_log(f"✓ Theme expanded ({len(result_text)} chars)")
+            else:
+                ui.notify('Failed to expand theme', type='warning')
+                add_log("⚠ LLM expansion failed")
+        else:
+            ui.notify('LLM client not initialized', type='warning')
+            add_log("⚠ LLM client not available")
         
     except Exception as e:
         add_log(f"Error expanding theme: {e}")
         ui.notify(f'Error: {e}', type='negative')
     finally:
         update_stage_badge('1_theme', 'done')
+
+
+def handle_image_upload(e):
+    """Handle image upload event"""
+    try:
+        if hasattr(e, 'content') and e.content:
+            # Save uploaded file
+            img_dir = config.get_path('img_inputs')
+            filename = f"uploaded_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+            filepath = img_dir / filename
+            
+            with open(filepath, 'wb') as f:
+                f.write(e.content)
+            
+            state.selected_input_image = str(filepath)
+            add_log(f"Image uploaded: {filename}")
+            ui.notify(f'Image uploaded: {filename}', type='positive')
+    except Exception as e:
+        add_log(f"Upload error: {e}")
+        ui.notify(f'Upload failed: {e}', type='negative')
+
+
+def handle_pose_upload(e):
+    """Handle pose image upload event"""
+    try:
+        if hasattr(e, 'content') and e.content:
+            # Save uploaded file
+            pose_dir = config.get_path('pose_inputs')
+            filename = f"pose_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+            filepath = pose_dir / filename
+            
+            with open(filepath, 'wb') as f:
+                f.write(e.content)
+            
+            state.selected_pose_image = str(filepath)
+            add_log(f"Pose image uploaded: {filename}")
+            ui.notify(f'Pose image uploaded: {filename}', type='positive')
+    except Exception as e:
+        add_log(f"Pose upload error: {e}")
+        ui.notify(f'Upload failed: {e}', type='negative')
 
 
 def refresh_images(grid: ui.row):
@@ -418,10 +578,35 @@ async def describe_images():
     """Describe selected images using vision API"""
     add_log("Describing images...")
     
-    # TODO: Implement vision API calls
-    await asyncio.sleep(1)
-    
-    ui.notify('Image description not yet implemented', type='info')
+    try:
+        # Free memory before calling LLM
+        if state.comfy_client:
+            free_memory(state.comfy_client)
+        
+        if not state.llm_client:
+            ui.notify('LLM client not initialized', type='warning')
+            return
+        
+        img_dir = config.get_path('img_inputs')
+        images = list(img_dir.glob('*.png')) + list(img_dir.glob('*.jpg'))
+        
+        if not images:
+            ui.notify('No images to describe', type='warning')
+            return
+        
+        # Describe first image (or implement multi-select later)
+        img_path = images[0]
+        description = state.llm_client.describe_image(str(img_path))
+        
+        if description:
+            ui.notify(f'Image described: {description[:100]}...', type='positive')
+            add_log(f"✓ Image description: {description[:200]}")
+        else:
+            ui.notify('Failed to describe image', type='warning')
+            
+    except Exception as e:
+        add_log(f"Description error: {e}")
+        ui.notify(f'Error: {e}', type='negative')
 
 
 async def download_audio(url: str):
@@ -434,6 +619,10 @@ async def download_audio(url: str):
     update_stage_badge('3_youtube', 'running')
     
     try:
+        # Free memory before operation
+        if state.comfy_client:
+            free_memory(state.comfy_client)
+        
         # TODO: Implement actual YouTube download using 1_yt_dl.py
         await asyncio.sleep(3)  # Simulate download
         
@@ -445,6 +634,161 @@ async def download_audio(url: str):
         ui.notify(f'Error: {e}', type='negative')
     finally:
         update_stage_badge('3_youtube', 'done')
+
+
+def run_vocal_swap(vocal_model: str):
+    """Run vocal separation with specified model"""
+    add_log(f"Running vocal swap with model: {vocal_model}")
+    update_stage_badge('4_vocal', 'running')
+    
+    try:
+        # Free memory before running ComfyUI workflow
+        if state.comfy_client:
+            free_memory(state.comfy_client)
+        
+        state.vocal_model = vocal_model
+        add_log(f"✓ Vocal model set to: {vocal_model}")
+        ui.notify(f'Vocal model updated: {vocal_model}', type='positive')
+        
+        # TODO: Actually call 2_Audio_separator.py with the model
+        
+    except Exception as e:
+        add_log(f"Vocal swap error: {e}")
+        ui.notify(f'Error: {e}', type='negative')
+    finally:
+        update_stage_badge('4_vocal', 'done')
+
+
+async def generate_pose_instructions(additional_info: str):
+    """Generate pose-to-image instructions using LLM"""
+    add_log("Generating pose instructions...")
+    
+    try:
+        # Free memory before calling LLM
+        if state.comfy_client:
+            free_memory(state.comfy_client)
+        
+        if not state.llm_client:
+            ui.notify('LLM client not initialized', type='warning')
+            return
+        
+        source_desc = "Source image from img_inputs"
+        target_pose = additional_info or "Standard pose transfer"
+        
+        instructions = state.llm_client.generate_pose_instructions(
+            source_description=source_desc,
+            target_pose=target_pose,
+            additional_info=additional_info
+        )
+        
+        if instructions:
+            ui.notify('Pose instructions generated', type='positive')
+            add_log(f"✓ Pose instructions: {instructions[:200]}...")
+        else:
+            ui.notify('Failed to generate instructions', type='warning')
+            
+    except Exception as e:
+        add_log(f"Pose instructions error: {e}")
+        ui.notify(f'Error: {e}', type='negative')
+
+
+def calculate_camera_angles(view_count: int, degrees_str: str):
+    """Calculate camera angles based on view count"""
+    try:
+        # Parse existing degrees or calculate new ones
+        if degrees_str.strip():
+            degrees = [float(d.strip()) for d in degrees_str.split(',')]
+        else:
+            # Auto-calculate evenly spaced angles
+            degrees = [i * (360 / view_count) for i in range(view_count)]
+        
+        state.camera_view_count = view_count
+        state.camera_degrees = degrees
+        
+        ui.notify(f'Camera angles calculated: {degrees}', type='positive')
+        add_log(f"Camera angles: {view_count} views at {degrees}")
+        
+    except Exception as e:
+        add_log(f"Angle calculation error: {e}")
+        ui.notify(f'Error: {e}', type='negative')
+
+
+def run_multi_angle(view_count: int, degrees_str: str):
+    """Run multi-angle generation"""
+    add_log(f"Running multi-angle generation: {view_count} views")
+    update_stage_badge('7_multiangle', 'running')
+    
+    try:
+        # Free memory before running ComfyUI
+        if state.comfy_client:
+            free_memory(state.comfy_client)
+        
+        calculate_camera_angles(view_count, degrees_str)
+        add_log("✓ Multi-angle generation started")
+        ui.notify('Multi-angle generation started', type='info')
+        
+        # TODO: Actually run the multi-angle workflow
+        
+    except Exception as e:
+        add_log(f"Multi-angle error: {e}")
+        ui.notify(f'Error: {e}', type='negative')
+    finally:
+        update_stage_badge('7_multiangle', 'done')
+
+
+async def enhance_video_instructions(instruction: str):
+    """Enhance video generation instructions using LLM"""
+    add_log("Enhancing video instructions...")
+    
+    try:
+        # Free memory before calling LLM
+        if state.comfy_client:
+            free_memory(state.comfy_client)
+        
+        if not state.llm_client:
+            ui.notify('LLM client not initialized', type='warning')
+            return
+        
+        enhanced = state.llm_client.generate_video_instructions(
+            image_description="Generated image",
+            motion_type=instruction or "smooth pan",
+            camera_angles=state.camera_view_count,
+            camera_degrees=state.camera_degrees,
+            additional_instruction=instruction
+        )
+        
+        if enhanced:
+            ui.notify('Video instructions enhanced', type='positive')
+            add_log(f"✓ Enhanced instructions: {enhanced[:200]}...")
+        else:
+            ui.notify('Failed to enhance instructions', type='warning')
+            
+    except Exception as e:
+        add_log(f"Video enhancement error: {e}")
+        ui.notify(f'Error: {e}', type='negative')
+
+
+def run_video_generation(instruction: str):
+    """Run video generation with instructions"""
+    add_log("Running video generation...")
+    update_stage_badge('8_video', 'running')
+    
+    try:
+        # Free memory before running ComfyUI
+        if state.comfy_client:
+            free_memory(state.comfy_client)
+        
+        state.video_additional_instruction = instruction
+        add_log(f"✓ Video generation started with: {instruction[:100]}...")
+        ui.notify('Video generation started', type='info')
+        
+        # TODO: Actually run the video generation workflow
+        
+    except Exception as e:
+        add_log(f"Video generation error: {e}")
+        ui.notify(f'Error: {e}', type='negative')
+    finally:
+        update_stage_badge('8_video', 'done')
 
 
 async def run_single_stage(stage_num: int):
