@@ -1,60 +1,49 @@
-
-# Python specific
-.mypy_cache/
-.pytest_cache/
-*.mp3
-*.mp4
-*.wav
-rvc/
-audio_separator/
-models/
-
-*.pdf
-.venv/
-venv/
-*.pyc
+```
+# Python
 __pycache__/
-*.o
-*.obj
-dist/
-build/
-target/
-*.class
-*.exe
-*.dll
-*.so
-*.a
-*.out
-
-# Dependencies
-.venv/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
 venv/
-node_modules/
-.mypy_cache/
+.venv/
+.ENV
+.ENV.*
+.python-version
 .pytest_cache/
-.gradle/
-venv/
-.venv/
-.env
-.env.local
-.env.*
+.mypy_cache/
+.coverage
+htmlcov/
 
-# Logs and temp files
+# Logs
 *.log
-*.tmp
-*.swp
-*.swo
 
 # Environment
 .env
 .env.local
-*.env.*
+.env.*
+!.env.example
 
-# Editors
+# Dependencies
+dist/
+build/
+*.egg-info/
+.eggs/
+.installed.cfg
+.tox/
+.coverage.*
+
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-models/audio_separator/*.onnx
-models/.initialized
-models/
+*~
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+```

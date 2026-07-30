@@ -1,7 +1,6 @@
-pydub
-pywebview
-ffmpeg
-ffmpeg-python
-yt-dlp
-spleeter 
-tensorflow
+nicegui>=1.4.0
+requests>=2.28.0
+pydub>=0.25.0
+ffmpeg-python>=0.2.0
+yt-dlp>=2023.0.0
+Pillow>=9.0.0
