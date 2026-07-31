@@ -181,6 +181,7 @@ musicvdo-comfy/
 │   ├── __init__.py
 │   ├── comfy_client.py        # ComfyUI API client
 │   ├── config.py              # Configuration management
+│   ├── llm_client.py          # LLM client (Ollama, Alibaba Cloud, OpenAI)
 │   ├── logger.py              # Logging utilities
 │   └── memory.py              # Memory management
 ├── src/                       # Source code (refactored)
@@ -200,7 +201,8 @@ musicvdo-comfy/
 ├── music_vdo_app.py           # NiceGUI web application
 ├── configure.json             # Configuration file
 ├── requirements.txt           # Python dependencies
-└── README.md                  # This file
+├── README.md                  # This file
+└── README_ALIBABA.md          # Alibaba Cloud integration guide
 ```
 
 ## ⚙️ Configuration
@@ -208,6 +210,32 @@ musicvdo-comfy/
 ### LLM Configuration
 
 Configure your preferred LLM provider for theme expansion and image description:
+
+#### Option 1: Alibaba Cloud Model Studio (Qwen3.5-397B-A17B)
+
+```json
+{
+  "llm": {
+    "provider": "alibaba",
+    "api_key": "",
+    "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "theme_model": "qwen3.5-397b-a17b-2506",
+    "vision_model": "qwen3.5-397b-a17b-2506",
+    "max_tokens": 800,
+    "temperature": 0.7
+  }
+}
+```
+
+**Important:** Set the `ALIBABA_API_KEY` environment variable before running:
+```bash
+export ALIBABA_API_KEY="your_api_key_here"  # Linux/macOS
+$env:ALIBABA_API_KEY="your_api_key_here"    # Windows PowerShell
+```
+
+See [README_ALIBABA.md](README_ALIBABA.md) for detailed setup instructions.
+
+#### Option 2: OpenAI
 
 ```json
 {
@@ -217,6 +245,22 @@ Configure your preferred LLM provider for theme expansion and image description:
     "base_url": "https://api.openai.com/v1",
     "theme_model": "gpt-4o-mini",
     "vision_model": "gpt-4o",
+    "max_tokens": 800,
+    "temperature": 0.7
+  }
+}
+```
+
+#### Option 3: Local Ollama
+
+```json
+{
+  "llm": {
+    "provider": "ollama",
+    "api_key": "",
+    "base_url": "http://localhost:11434",
+    "theme_model": "qwen3.5:9b",
+    "vision_model": "qwen3.5:9b",
     "max_tokens": 800,
     "temperature": 0.7
   }

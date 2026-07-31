@@ -1,9 +1,11 @@
 """
 LLM Client for prompt enhancement, image description, and API changes
 Supports Ollama (qwen3.5:9b), OpenAI-compatible APIs, and cloud providers
+Including Alibaba Cloud Model Studio (Qwen3.5-397B-A17B)
 """
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 import requests
@@ -29,7 +31,6 @@ class LLMClient:
     ):
         self.provider = provider
         self.base_url = base_url.rstrip('/')
-        self.api_key = api_key
         self.model = model
         self.vision_model = vision_model
         self.max_tokens = max_tokens
@@ -37,12 +38,40 @@ class LLMClient:
         self.timeout = timeout
         self.temp_dir = Path(tempfile.mkdtemp(prefix="music_vdo_api_"))
         
+        # Handle API key with environment variable support
+        self.api_key = self._resolve_api_key(api_key, provider)
+        
         # Headers for API calls
         self.headers = {
             "Content-Type": "application/json"
         }
-        if api_key:
-            self.headers["Authorization"] = f"Bearer {api_key}"
+        if self.api_key:
+            self.headers["Authorization"] = f"Bearer {self.api_key}"
+    
+    def _resolve_api_key(self, api_key: str, provider: str) -> str:
+        """
+        Resolve API key from provided value or environment variable
+        
+        For Alibaba Cloud provider, checks ALIBABA_API_KEY environment variable
+        """
+        # If API key is provided directly, use it
+        if api_key and api_key.strip():
+            return api_key.strip()
+        
+        # Check for provider-specific environment variables
+        provider_lower = provider.lower()
+        
+        if provider_lower == "alibaba":
+            env_key = os.environ.get("ALIBABA_API_KEY", "").strip()
+            if env_key:
+                logger.info("API key loaded from ALIBABA_API_KEY environment variable")
+                return env_key
+        
+        # Add support for other providers here if needed
+        # elif provider_lower == "openai":
+        #     return os.environ.get("OPENAI_API_KEY", "").strip()
+        
+        return ""
     
     def _is_ollama(self) -> bool:
         """Check if using Ollama provider"""
