@@ -1,4 +1,4 @@
-```gitignore
+models/
 # Compiled Python files
 *.pyc
 __pycache__/
@@ -66,4 +66,3 @@ htmlcov/
 *.tar.bz2
 *.tar.xz
 *.tar.zst
-```
