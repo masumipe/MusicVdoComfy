@@ -506,6 +506,9 @@ def init_llm_from_config(config_dict: Dict[str, Any]) -> LLMClient:
     
     llm_config = config_dict.get('llm', {})
     
+    # Use connection_timeout if available, otherwise fall back to timeout
+    timeout = llm_config.get('connection_timeout', llm_config.get('timeout', 120))
+    
     llm_client = LLMClient(
         provider=llm_config.get('provider', 'ollama'),
         base_url=llm_config.get('base_url', 'http://localhost:11434'),
@@ -514,10 +517,10 @@ def init_llm_from_config(config_dict: Dict[str, Any]) -> LLMClient:
         vision_model=llm_config.get('vision_model', 'qwen3.5:9b'),
         max_tokens=llm_config.get('max_tokens', 800),
         temperature=llm_config.get('temperature', 0.7),
-        timeout=llm_config.get('timeout', 120)
+        timeout=timeout
     )
     
-    logger.info(f"LLM client initialized: {llm_client.provider} @ {llm_client.base_url}")
+    logger.info(f"LLM client initialized: {llm_client.provider} @ {llm_client.base_url} (timeout={timeout}s)")
     return llm_client
 
 

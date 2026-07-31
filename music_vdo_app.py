@@ -143,7 +143,7 @@ def main_page():
                 ).props('unelevated color=negative size=sm').classes('font-bold')
     
     # Main content area - use full height with grid layout
-    with ui.row().classes('w-full h-[calc(100vh-100px)] p-2 gap-2'):
+    with ui.row().classes('w-full h-[calc(100vh-48px)] p-2 gap-2'):
         # Left sidebar - Stage stepper (compact, fixed width)
         with ui.column().classes('w-56 bg-grey-800 p-2 gap-1 overflow-y-auto rounded'):
             ui.label('Pipeline Stages').classes('text-sm font-bold text-white mb-1')
@@ -168,7 +168,7 @@ def main_page():
                         state.status_badges[stage_id] = badge
         
         # Right content area - Use grid layout for better horizontal space usage
-        with ui.column().classes('flex-1 gap-2'):
+        with ui.column().classes('flex-1 gap-2 overflow-y-auto'):
             
             # Progress bar - compact
             with ui.row().classes('w-full items-center gap-2 bg-grey-800 p-2 rounded'):
@@ -177,7 +177,7 @@ def main_page():
                 progress_label = ui.label('Stage 0/8').classes('text-white text-xs')
             
             # Two-column grid for stages - use grid layout
-            with ui.grid().classes('w-full flex-1 grid-cols-2 gap-2 auto-rows-min'):
+            with ui.grid().classes('w-full gap-2 grid-cols-2 auto-rows-min'):
                 # Column 1 - Stages 1-5
                 with ui.column().classes('gap-2'):
                     
@@ -191,15 +191,17 @@ def main_page():
                             value=''
                         ).classes('w-full').props('dark outlined dense rows=2')
                         
-                        with ui.row().classes('gap-1 mt-1'):
+                        with ui.row().classes('gap-1 mt-1 items-center'):
                             ui.button(
                                 'Load Theme.txt',
                                 on_click=lambda: load_theme(theme_editor)
                             ).props('outlined color=primary size=sm')
                             
+                            enable_enhancement = ui.checkbox('Enable Prompt Enhancement', value=True).classes('text-white text-xs')
+                            
                             ui.button(
                                 '✨ Expand',
-                                on_click=lambda: expand_theme(theme_editor)
+                                on_click=lambda: expand_theme(theme_editor, enable_enhancement.value)
                             ).props('unelevated color=primary size=sm')
                         
                         theme_result = ui.markdown('').classes('w-full mt-1 text-white text-xs')
@@ -332,19 +334,21 @@ def main_page():
                         
                         video_instruction = ui.textarea(
                             label='',
-                            placeholder='Additional instructions for image-to-video...',
+                            placeholder='Additional instructions for image-to-video (leave empty to generate from prompt only)...',
                             value=state.video_additional_instruction
                         ).classes('w-full').props('dark outlined dense rows=2')
                         
-                        with ui.row().classes('gap-1 mt-1'):
+                        with ui.row().classes('gap-1 mt-1 items-center'):
                             ui.button(
                                 '✨ Enhance',
                                 on_click=lambda: enhance_video_instructions(video_instruction.value)
                             ).props('outlined color=primary size=sm')
                             
+                            without_image_cb = ui.checkbox('Generate without image', value=False).props('dense').classes('text-white text-xs')
+                            
                             ui.button(
                                 '▶ Generate',
-                                on_click=lambda: run_video_generation(video_instruction.value)
+                                on_click=lambda: run_video_generation(video_instruction.value, without_image_cb.value)
                             ).props('unelevated color=primary size=sm')
                         
                         video_result = ui.markdown('').classes('w-full mt-1 text-white text-xs')
@@ -447,18 +451,18 @@ def load_theme(editor: ui.textarea):
         ui.notify(f'Error: {e}', type='negative')
 
 
-async def expand_theme(editor: ui.textarea):
+async def expand_theme(editor: ui.textarea, enable_enhancement: bool = True):
     """Expand theme using LLM"""
-    add_log("Expanding theme with LLM...")
+    add_log("Expanding theme with LLM..." if enable_enhancement else "Using theme without enhancement...")
     update_stage_badge('1_theme', 'running')
     
     try:
         # Free memory before calling LLM (to prepare for ComfyUI later)
-        if state.comfy_client:
+        if state.comfy_client and enable_enhancement:
             free_memory(state.comfy_client)
         
-        # Use LLM client to enhance prompt
-        if state.llm_client:
+        # Use LLM client to enhance prompt only if enabled
+        if state.llm_client and enable_enhancement:
             expanded = state.llm_client.enhance_prompt(editor.value)
             
             if expanded:
@@ -482,9 +486,13 @@ async def expand_theme(editor: ui.textarea):
             else:
                 ui.notify('Failed to expand theme', type='warning')
                 add_log("⚠ LLM expansion failed")
-        else:
+        elif enable_enhancement:
             ui.notify('LLM client not initialized', type='warning')
             add_log("⚠ LLM client not available")
+        else:
+            # Enhancement disabled, use original theme
+            ui.notify('Prompt enhancement disabled. Using original theme.', type='info')
+            add_log("✓ Using original theme without enhancement")
         
     except Exception as e:
         add_log(f"Error expanding theme: {e}")
@@ -582,15 +590,24 @@ async def describe_images():
             ui.notify('No images to describe', type='warning')
             return
         
-        # Describe first image (or implement multi-select later)
-        img_path = images[0]
-        description = state.llm_client.describe_image(str(img_path))
+        # Describe all images with longer timeout support
+        descriptions = []
+        for img_path in images[:5]:  # Limit to first 5 images
+            add_log(f"Describing image: {img_path.name}")
+            description = state.llm_client.describe_image(str(img_path))
+            
+            if description:
+                descriptions.append(f"**{img_path.name}:** {description}")
+                add_log(f"✓ Image described: {description[:100]}...")
+            else:
+                add_log(f"⚠ Failed to describe: {img_path.name}")
         
-        if description:
-            ui.notify(f'Image described: {description[:100]}...', type='positive')
-            add_log(f"✓ Image description: {description[:200]}")
+        if descriptions:
+            result_text = "\n\n".join(descriptions)
+            ui.notify(f'{len(descriptions)} image(s) described successfully', type='positive')
+            add_log(f"✓ All images described ({len(result_text)} chars)")
         else:
-            ui.notify('Failed to describe image', type='warning')
+            ui.notify('Failed to describe any images', type='warning')
             
     except Exception as e:
         add_log(f"Description error: {e}")
@@ -756,9 +773,14 @@ async def enhance_video_instructions(instruction: str):
         ui.notify(f'Error: {e}', type='negative')
 
 
-def run_video_generation(instruction: str):
-    """Run video generation with instructions"""
-    add_log("Running video generation...")
+def run_video_generation(instruction: str, without_image: bool = False):
+    """Run video generation with instructions
+    
+    Args:
+        instruction: Additional instructions for video generation
+        without_image: If True, generate video based on prompt only (no image input)
+    """
+    add_log("Running video generation..." + (" (prompt-only mode)" if without_image else ""))
     update_stage_badge('8_video', 'running')
     
     try:
@@ -767,10 +789,16 @@ def run_video_generation(instruction: str):
             free_memory(state.comfy_client)
         
         state.video_additional_instruction = instruction
-        add_log(f"✓ Video generation started with: {instruction[:100]}...")
-        ui.notify('Video generation started', type='info')
+        
+        if without_image:
+            add_log(f"✓ Video generation started from prompt only: {instruction[:100] if instruction else 'No additional instructions'}...")
+            ui.notify('Video generation started (prompt-only mode)', type='info')
+        else:
+            add_log(f"✓ Video generation started with: {instruction[:100] if instruction else 'Default instructions'}...")
+            ui.notify('Video generation started', type='info')
         
         # TODO: Actually run the video generation workflow
+        # When without_image is True, use text-to-video workflow instead of image-to-video
         
     except Exception as e:
         add_log(f"Video generation error: {e}")
