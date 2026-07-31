@@ -77,11 +77,15 @@ def init_comfy_client():
 async def check_comfy_status():
     """Periodically check ComfyUI status"""
     while True:
-        if state.comfy_client:
-            is_online = state.comfy_client.is_online()
-            status_label.props(f'label={"● Online" if is_online else "○ Offline"}')
-            status_label.classes(remove='text-green text-red')
-            status_label.classes(add='text-green' if is_online else 'text-red')
+        try:
+            if state.comfy_client:
+                is_online = state.comfy_client.is_online()
+                status_label.props(f'label={"● Online" if is_online else "○ Offline"}')
+                status_label.classes(remove='text-green text-red')
+                status_label.classes(add='text-green' if is_online else 'text-red')
+        except RuntimeError:
+            # Parent slot has been deleted, stop the loop
+            break
         await asyncio.sleep(5)
 
 
@@ -379,16 +383,32 @@ def main_page():
             
             async def update_console():
                 while True:
-                    if state.log_messages:
-                        for msg in state.log_messages[-10:]:
-                            console_log.push(msg)
-                        state.log_messages.clear()
+                    try:
+                        if state.log_messages:
+                            for msg in state.log_messages[-10:]:
+                                console_log.push(msg)
+                            state.log_messages.clear()
+                    except RuntimeError:
+                        # Parent slot has been deleted, stop the loop
+                        break
                     await asyncio.sleep(1)
             
             ui.timer(1, update_console, once=False)
     
-    # Start background tasks
-    ui.timer(5, check_comfy_status, once=False)
+    # Start background tasks with error handling
+    def safe_check_comfy_status():
+        try:
+            asyncio.create_task(check_comfy_status_wrapper())
+        except RuntimeError:
+            pass  # Parent context deleted
+    
+    async def check_comfy_status_wrapper():
+        try:
+            await check_comfy_status()
+        except RuntimeError:
+            pass  # Parent context deleted
+    
+    ui.timer(5, safe_check_comfy_status, once=False)
 
 
 def add_log(message: str):
