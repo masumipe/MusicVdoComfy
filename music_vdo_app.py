@@ -167,8 +167,8 @@ def main_page():
                         badge = ui.badge(initial_status, color='grey').classes('text-xs')
                         state.status_badges[stage_id] = badge
         
-        # Right content area - 2-column grid for better horizontal space usage
-        with ui.column().classes('flex-1 gap-2 overflow-y-auto'):
+        # Right content area - Use grid layout for better horizontal space usage
+        with ui.column().classes('flex-1 gap-2'):
             
             # Progress bar - compact
             with ui.row().classes('w-full items-center gap-2 bg-grey-800 p-2 rounded'):
@@ -176,20 +176,20 @@ def main_page():
                 progress = ui.linear_progress(value=0).classes('flex-1')
                 progress_label = ui.label('Stage 0/8').classes('text-white text-xs')
             
-            # Two-column grid for stages
-            with ui.row().classes('w-full gap-2 flex-1'):
-                # Left column - Stages 1-5
-                with ui.column().classes('w-1/2 gap-2 overflow-y-auto'):
+            # Two-column grid for stages - use grid layout
+            with ui.grid().classes('w-full flex-1 grid-cols-2 gap-2 auto-rows-min'):
+                # Column 1 - Stages 1-5
+                with ui.column().classes('gap-2'):
                     
                     # Stage 1: Theme
-                    with ui.card().classes('w-full p-3 bg-grey-800'):
+                    with ui.card().classes('w-full p-2 bg-grey-800'):
                         ui.label('📝 Stage 1: Theme Expansion').classes('text-sm font-bold text-white mb-1')
                         
                         theme_editor = ui.textarea(
                             label='',
                             placeholder='Enter theme or load from Theme.txt...',
                             value=''
-                        ).classes('w-full').props('dark outlined dense')
+                        ).classes('w-full').props('dark outlined dense rows=2')
                         
                         with ui.row().classes('gap-1 mt-1'):
                             ui.button(
@@ -205,7 +205,7 @@ def main_page():
                         theme_result = ui.markdown('').classes('w-full mt-1 text-white text-xs')
                     
                     # Stage 2: Input Images
-                    with ui.card().classes('w-full p-3 bg-grey-800'):
+                    with ui.card().classes('w-full p-2 bg-grey-800'):
                         ui.label('🖼️ Stage 2: Input Images').classes('text-sm font-bold text-white mb-1')
                         
                         # Image upload and grid in same row
@@ -229,7 +229,7 @@ def main_page():
                         selected_image_label = ui.label('No image selected').classes('text-xs text-grey-400')
                     
                     # Stage 3: YouTube Download
-                    with ui.card().classes('w-full p-3 bg-grey-800'):
+                    with ui.card().classes('w-full p-2 bg-grey-800'):
                         ui.label('📺 Stage 3: YouTube Audio').classes('text-sm font-bold text-white mb-1')
                         
                         with ui.row().classes('w-full gap-1'):
@@ -243,10 +243,10 @@ def main_page():
                                 on_click=lambda: download_audio(youtube_url_input.value)
                             ).props('unelevated color=primary size=sm')
                         
-                        download_log = ui.log().classes('w-full h-20 bg-grey-900 text-xs')
+                        download_log = ui.log().classes('w-full h-16 bg-grey-900 text-xs')
                     
                     # Stage 4: Vocal Swap
-                    with ui.card().classes('w-full p-3 bg-grey-800'):
+                    with ui.card().classes('w-full p-2 bg-grey-800'):
                         ui.label('🎤 Stage 4: Vocal Swap').classes('text-sm font-bold text-white mb-1')
                         
                         with ui.row().classes('w-full gap-1'):
@@ -261,20 +261,19 @@ def main_page():
                             ).props('unelevated color=primary size=sm')
                     
                     # Stage 5: Audio Segmentation
-                    with ui.card().classes('w-full p-3 bg-grey-800'):
-                        ui.label('✂️ Stage 5: Audio Segmentation').classes('text-sm font-bold text-white mb-1')
-                        ui.label('Split audio by silence detection').classes('text-xs text-grey-400')
-                        
-                        ui.button(
-                            '▶ Run Segmentation',
-                            on_click=lambda: run_single_stage(5)
-                        ).props('unelevated color=primary size=sm').classes('mt-1')
+                    with ui.card().classes('w-full p-2 bg-grey-800'):
+                        with ui.row().classes('w-full items-center justify-between'):
+                            ui.label('✂️ Stage 5: Audio Segmentation').classes('text-sm font-bold text-white')
+                            ui.button(
+                                '▶ Run',
+                                on_click=lambda: run_single_stage(5)
+                            ).props('unelevated color=primary size=sm')
                 
-                # Right column - Stages 6-9
-                with ui.column().classes('w-1/2 gap-2 overflow-y-auto'):
+                # Column 2 - Stages 6-9
+                with ui.column().classes('gap-2'):
                     
                     # Stage 6: Pose Change
-                    with ui.card().classes('w-full p-3 bg-grey-800'):
+                    with ui.card().classes('w-full p-2 bg-grey-800'):
                         ui.label('💃 Stage 6: Pose Change').classes('text-sm font-bold text-white mb-1')
                         
                         with ui.row().classes('w-full gap-2'):
@@ -289,7 +288,7 @@ def main_page():
                                     label='',
                                     placeholder='Additional info for pose-to-image...',
                                     value=state.pose_additional_info
-                                ).classes('w-full').props('dark outlined dense')
+                                ).classes('w-full').props('dark outlined dense rows=2')
                                 
                                 with ui.row().classes('gap-1 mt-1'):
                                     ui.button(
@@ -300,7 +299,7 @@ def main_page():
                         pose_result = ui.markdown('').classes('w-full mt-1 text-white text-xs')
                     
                     # Stage 7: Multi-Angle View
-                    with ui.card().classes('w-full p-3 bg-grey-800'):
+                    with ui.card().classes('w-full p-2 bg-grey-800'):
                         ui.label('🎬 Stage 7: Multi-Angle').classes('text-sm font-bold text-white mb-1')
                         
                         with ui.row().classes('w-full gap-2'):
@@ -328,14 +327,14 @@ def main_page():
                             ).props('unelevated color=primary size=sm')
                     
                     # Stage 8: Video Generation
-                    with ui.card().classes('w-full p-3 bg-grey-800'):
+                    with ui.card().classes('w-full p-2 bg-grey-800'):
                         ui.label('🎥 Stage 8: Video Gen').classes('text-sm font-bold text-white mb-1')
                         
                         video_instruction = ui.textarea(
                             label='',
                             placeholder='Additional instructions for image-to-video...',
                             value=state.video_additional_instruction
-                        ).classes('w-full').props('dark outlined dense')
+                        ).classes('w-full').props('dark outlined dense rows=2')
                         
                         with ui.row().classes('gap-1 mt-1'):
                             ui.button(
@@ -351,7 +350,7 @@ def main_page():
                         video_result = ui.markdown('').classes('w-full mt-1 text-white text-xs')
                     
                     # Stage 9: Logs
-                    with ui.card().classes('w-full p-3 bg-grey-800'):
+                    with ui.card().classes('w-full p-2 bg-grey-800'):
                         ui.label('📋 Stage 9: Logs & Errors').classes('text-sm font-bold text-white mb-1')
                         
                         with ui.row().classes('w-full gap-1 mb-1'):
@@ -365,7 +364,7 @@ def main_page():
                                 on_click=lambda: open_log_folder()
                             ).props('outlined color=primary size=sm')
                         
-                        log_display = ui.markdown('').classes('w-full bg-grey-900 p-1 rounded font-mono text-xs text-green-400 max-h-32 overflow-y-auto')
+                        log_display = ui.markdown('').classes('w-full bg-grey-900 p-1 rounded font-mono text-xs text-green-400 max-h-24 overflow-y-auto')
                         refresh_logs(log_display)
     
     # Bottom log console - compact
