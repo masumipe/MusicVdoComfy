@@ -1,6 +1,4 @@
 # Compiled and build artifacts
-*.pyc
-__pycache__/
 *.o
 *.obj
 *.so
@@ -9,6 +7,12 @@ __pycache__/
 *.class
 *.out
 *.a
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
 # Dependencies
 .venv/
@@ -44,3 +48,6 @@ Thumbs.db
 
 # Coverage
 coverage/
+
+# Local models and large files
+models/

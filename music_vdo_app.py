@@ -173,7 +173,7 @@ def main_page():
         # Progress bar
         with ui.row().classes('w-full items-center gap-4'):
             ui.label('Progress:').classes('text-white')
-            progress = ui.linear_progress(value=0, max=8).classes('flex-1')
+            progress = ui.linear_progress(value=0).classes('flex-1')
             progress_label = ui.label('Stage 0/8').classes('text-white text-sm')
         
         # Stage cards container
@@ -882,7 +882,7 @@ if __name__ in {"__main__", "__mp_main__"}:
     ui.run(
         title='Music VDO Comfy',
         host='0.0.0.0',
-        port=8080,
+        port=5000,
         reload=False,
         dark=True,
         storage_secret='music_vdo_secret_key'
