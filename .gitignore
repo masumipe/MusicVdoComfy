@@ -1,1 +1,1 @@
-Nothing should be ignored in this case, as the changes only include source code files (.py, .md) and configuration files (.json).
+Nothing should be ignored since only source files (.py) were added.
