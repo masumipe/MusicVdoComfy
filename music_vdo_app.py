@@ -211,8 +211,7 @@ def main_page():
                 # Image upload section
                 with ui.row().classes('w-full gap-2 mb-2'):
                     ui.upload(
-                        max_files=10,
-                        accepted_types=['.png', '.jpg', '.jpeg', '.webp']
+                        max_files=10
                     ).on('uploaded', lambda e: handle_image_upload(e))
                 
                 # Image grid with selection
@@ -286,8 +285,7 @@ def main_page():
                 # Pose image upload
                 with ui.row().classes('w-full gap-2 mb-2'):
                     ui.upload(
-                        max_files=1,
-                        accepted_types=['.png', '.jpg', '.jpeg']
+                        max_files=1
                     ).on('uploaded', lambda e: handle_pose_upload(e))
                 
                 # Pose image preview
