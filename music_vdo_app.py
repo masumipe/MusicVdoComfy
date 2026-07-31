@@ -180,6 +180,24 @@ def main_page():
                 progress = ui.linear_progress(value=0).classes('flex-1')
                 progress_label = ui.label('Stage 0/8').classes('text-white text-xs')
             
+            # Live Console - moved to top for visibility
+            with ui.card().classes('w-full p-2 bg-grey-800'):
+                ui.label('🖥️ Live Console').classes('text-sm font-bold text-white mb-1')
+                console_log = ui.log().classes('w-full h-16 bg-black text-green-400 font-mono text-xs')
+                
+                async def update_console():
+                    try:
+                        if state.log_messages:
+                            for msg in state.log_messages[-10:]:
+                                console_log.push(msg)
+                            state.log_messages.clear()
+                    except RuntimeError:
+                        # Parent slot has been deleted, stop the loop
+                        pass
+                    await asyncio.sleep(1)
+                
+                console_timer = ui.timer(1, update_console, once=False)
+            
             # Two-column grid for stages - use grid layout
             with ui.grid().classes('w-full gap-2 grid-cols-2 auto-rows-min'):
                 # Column 1 - Stages 1-5
@@ -268,12 +286,13 @@ def main_page():
                     
                     # Stage 5: Audio Segmentation
                     with ui.card().classes('w-full p-2 bg-grey-800'):
-                        with ui.row().classes('w-full items-center justify-between'):
-                            ui.label('✂️ Stage 5: Audio Segmentation').classes('text-sm font-bold text-white')
+                        ui.label('✂️ Stage 5: Audio Segmentation').classes('text-sm font-bold text-white mb-1')
+                        with ui.row().classes('w-full gap-1 mt-1'):
                             ui.button(
                                 '▶ Run',
                                 on_click=lambda: run_single_stage(5)
                             ).props('unelevated color=primary size=sm')
+                        seg_log = ui.log().classes('w-full h-12 bg-grey-900 text-xs')
                 
                 # Column 2 - Stages 6-9
                 with ui.column().classes('gap-2'):
@@ -374,26 +393,6 @@ def main_page():
                         
                         log_display = ui.markdown('').classes('w-full bg-grey-900 p-1 rounded font-mono text-xs text-green-400 max-h-24 overflow-y-auto')
                         refresh_logs(log_display)
-    
-    # Bottom log console - compact
-    with ui.footer().classes('w-full bg-grey-900 border-t border-grey-700 h-20'):
-        with ui.column().classes('w-full p-1'):
-            ui.label('Live Console').classes('text-xs text-grey-500')
-            console_log = ui.log().classes('w-full h-12 bg-black text-green-400 font-mono text-xs')
-            
-            async def update_console():
-                while True:
-                    try:
-                        if state.log_messages:
-                            for msg in state.log_messages[-10:]:
-                                console_log.push(msg)
-                            state.log_messages.clear()
-                    except RuntimeError:
-                        # Parent slot has been deleted, stop the loop
-                        break
-                    await asyncio.sleep(1)
-            
-            ui.timer(1, update_console, once=False)
     
     # Start background tasks with error handling
     def safe_check_comfy_status():
