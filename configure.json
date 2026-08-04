@@ -5,6 +5,8 @@
     "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
     "theme_model": "qwen3.5-397b-a17b-2506",
     "vision_model": "qwen3.5-397b-a17b-2506",
+    "image_model": "wanx2.1-turbo-i2v",
+    "video_model": "wan2.1-t2v-14b",
     "max_tokens": 800,
     "temperature": 0.7,
     "timeout": 120,

@@ -1,11 +1,13 @@
 """
-LLM Client for prompt enhancement, image description, and API changes
+LLM Client for prompt enhancement, image description, image generation, and video generation
 Supports Ollama (qwen3.5:9b), OpenAI-compatible APIs, and cloud providers
-Including Alibaba Cloud Model Studio (Qwen3.5-397B-A17B)
+Including Alibaba Cloud Model Studio (Qwen3.5-397B-A17B, Wanx, Wan)
 """
 import json
 import logging
 import os
+import time
+import base64
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 import requests
@@ -25,6 +27,8 @@ class LLMClient:
         api_key: str = "",
         model: str = "qwen3.5:9b",
         vision_model: str = "qwen3.5:9b",
+        image_model: str = "wanx2.1-turbo-i2v",
+        video_model: str = "wan2.1-t2v-14b",
         max_tokens: int = 800,
         temperature: float = 0.7,
         timeout: int = 120
@@ -33,6 +37,8 @@ class LLMClient:
         self.base_url = base_url.rstrip('/')
         self.model = model
         self.vision_model = vision_model
+        self.image_model = image_model
+        self.video_model = video_model
         self.max_tokens = max_tokens
         self.temperature = temperature
         self.timeout = timeout
@@ -72,6 +78,22 @@ class LLMClient:
         #     return os.environ.get("OPENAI_API_KEY", "").strip()
         
         return ""
+    
+    def _get_image_generation_url(self) -> str:
+        """Get appropriate image generation API URL"""
+        if self._is_ollama():
+            return f"{self.base_url}/v1/images/generations"
+        else:
+            # Alibaba Cloud Wanx image generation endpoint
+            return f"{self.base_url}/wanx/v1/image-generation"
+    
+    def _get_video_generation_url(self) -> str:
+        """Get appropriate video generation API URL"""
+        if self._is_ollama():
+            return f"{self.base_url}/v1/video/generations"
+        else:
+            # Alibaba Cloud Wan video generation endpoint
+            return f"{self.base_url}/wan/v1/video-generation"
     
     def _is_ollama(self) -> bool:
         """Check if using Ollama provider"""
@@ -485,6 +507,269 @@ Camera angles: {angles_str}"""
             logger.info("Video instructions generated")
         return response
     
+    def generate_image(
+        self,
+        prompt: str,
+        negative_prompt: Optional[str] = None,
+        size: str = "1024x1024",
+        output_path: Optional[str] = None,
+        **kwargs
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Generate image using Alibaba Cloud Wanx or other providers
+        
+        Args:
+            prompt: Text prompt for image generation
+            negative_prompt: What to avoid in the generated image
+            size: Image size (e.g., "1024x1024", "720x1280")
+            output_path: Optional path to save the generated image
+            **kwargs: Additional parameters for specific providers
+            
+        Returns:
+            Dict with 'image_path', 'prompt', 'model' keys or None on error
+        """
+        if not self.api_key and not self._is_ollama():
+            logger.error("API key required for image generation")
+            return None
+        
+        url = self._get_image_generation_url()
+        
+        # Parse size
+        width, height = map(int, size.split('x'))
+        
+        # Build request payload based on provider
+        if self._is_ollama():
+            payload = {
+                "model": self.image_model,
+                "prompt": prompt,
+                "negative_prompt": negative_prompt or "",
+                "width": width,
+                "height": height,
+                "steps": kwargs.get('steps', 30),
+                "cfg_scale": kwargs.get('cfg_scale', 7.0),
+            }
+        else:
+            # Alibaba Cloud Wanx format
+            payload = {
+                "model": self.image_model,
+                "prompt": prompt,
+                "negative_prompt": negative_prompt or "",
+                "size": size,
+                "n": 1,
+                "style": kwargs.get('style', '<auto>'),
+            }
+            
+            # Add optional parameters
+            if 'seed' in kwargs:
+                payload['seed'] = kwargs['seed']
+            if 'num_inference_steps' in kwargs:
+                payload['num_inference_steps'] = kwargs['num_inference_steps']
+        
+        try:
+            logger.info(f"Generating image with model: {self.image_model}")
+            response = requests.post(
+                url,
+                headers=self.headers,
+                json=payload,
+                timeout=self.timeout * 2  # Image generation takes longer
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Extract image URL/data from response
+                image_data = None
+                if 'data' in data and len(data['data']) > 0:
+                    if 'url' in data['data'][0]:
+                        # Download image from URL
+                        image_url = data['data'][0]['url']
+                        img_response = requests.get(image_url, timeout=30)
+                        if img_response.status_code == 200:
+                            image_data = img_response.content
+                    elif 'b64_json' in data['data'][0]:
+                        # Base64 encoded image
+                        image_data = base64.b64decode(data['data'][0]['b64_json'])
+                
+                if image_data:
+                    # Save to file
+                    if output_path:
+                        output_file = Path(output_path)
+                    else:
+                        output_file = self.temp_dir / f"generated_{int(time.time())}.png"
+                    
+                    output_file.parent.mkdir(parents=True, exist_ok=True)
+                    with open(output_file, 'wb') as f:
+                        f.write(image_data)
+                    
+                    logger.info(f"Image saved to: {output_file}")
+                    return {
+                        'image_path': str(output_file),
+                        'prompt': prompt,
+                        'model': self.image_model,
+                        'size': size
+                    }
+                else:
+                    logger.error("No image data in response")
+                    return None
+            else:
+                logger.error(f"Image generation API error ({response.status_code}): {response.text}")
+                return None
+                
+        except Exception as e:
+            logger.error(f"Image generation error: {e}")
+            return None
+    
+    def generate_video(
+        self,
+        prompt: str,
+        image_path: Optional[str] = None,
+        negative_prompt: Optional[str] = None,
+        duration: int = 5,
+        resolution: str = "720p",
+        output_path: Optional[str] = None,
+        **kwargs
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Generate video using Alibaba Cloud Wan or other providers
+        
+        Args:
+            prompt: Text prompt for video generation
+            image_path: Optional input image for image-to-video
+            negative_prompt: What to avoid in the generated video
+            duration: Video duration in seconds
+            resolution: Video resolution (e.g., "720p", "1080p")
+            output_path: Optional path to save the generated video
+            **kwargs: Additional parameters for specific providers
+            
+        Returns:
+            Dict with 'video_path', 'prompt', 'model' keys or None on error
+        """
+        if not self.api_key and not self._is_ollama():
+            logger.error("API key required for video generation")
+            return None
+        
+        url = self._get_video_generation_url()
+        
+        # Build request payload based on provider
+        if self._is_ollama():
+            payload = {
+                "model": self.video_model,
+                "prompt": prompt,
+                "negative_prompt": negative_prompt or "",
+                "duration": duration,
+                "resolution": resolution,
+            }
+            if image_path:
+                # Encode and send image
+                with open(image_path, 'rb') as f:
+                    image_data = base64.b64encode(f.read()).decode('utf-8')
+                payload['image'] = image_data
+        else:
+            # Alibaba Cloud Wan video generation format
+            payload = {
+                "model": self.video_model,
+                "prompt": prompt,
+                "negative_prompt": negative_prompt or "",
+                "duration": duration,
+                "resolution": resolution,
+            }
+            
+            # Add image for image-to-video
+            if image_path:
+                with open(image_path, 'rb') as f:
+                    image_data = base64.b64encode(f.read()).decode('utf-8')
+                payload['image'] = image_data
+            
+            # Add optional parameters
+            if 'seed' in kwargs:
+                payload['seed'] = kwargs['seed']
+            if 'guidance_scale' in kwargs:
+                payload['guidance_scale'] = kwargs['guidance_scale']
+        
+        try:
+            logger.info(f"Starting video generation with model: {self.video_model}")
+            
+            # Submit video generation task
+            response = requests.post(
+                url,
+                headers=self.headers,
+                json=payload,
+                timeout=30  # Initial submission timeout
+            )
+            
+            if response.status_code != 200:
+                logger.error(f"Video generation submission error ({response.status_code}): {response.text}")
+                return None
+            
+            data = response.json()
+            task_id = data.get('task_id') or data.get('id')
+            
+            if not task_id:
+                logger.error("No task_id in video generation response")
+                return None
+            
+            logger.info(f"Video generation task submitted: {task_id}")
+            
+            # Poll for completion (Alibaba Cloud uses async task processing)
+            status_url = f"{url}/{task_id}" if not self._is_ollama() else f"{url}/status/{task_id}"
+            max_wait_time = kwargs.get('max_wait_time', 600)  # Default 10 minutes
+            poll_interval = kwargs.get('poll_interval', 10)  # Check every 10 seconds
+            
+            start_time = time.time()
+            while time.time() - start_time < max_wait_time:
+                time.sleep(poll_interval)
+                
+                status_response = requests.get(
+                    status_url,
+                    headers=self.headers,
+                    timeout=30
+                )
+                
+                if status_response.status_code == 200:
+                    status_data = status_response.json()
+                    status = status_data.get('status', '').lower()
+                    
+                    if status in ['completed', 'succeeded', 'success']:
+                        # Video ready, download it
+                        video_url = status_data.get('output', {}).get('video_url') or \
+                                   status_data.get('results', {}).get('video', {}).get('url')
+                        
+                        if video_url:
+                            logger.info(f"Downloading generated video from: {video_url}")
+                            video_response = requests.get(video_url, timeout=120)
+                            
+                            if video_response.status_code == 200:
+                                # Save video file
+                                if output_path:
+                                    video_file = Path(output_path)
+                                else:
+                                    video_file = self.temp_dir / f"generated_{int(time.time())}.mp4"
+                                
+                                video_file.parent.mkdir(parents=True, exist_ok=True)
+                                with open(video_file, 'wb') as f:
+                                    f.write(video_response.content)
+                                
+                                logger.info(f"Video saved to: {video_file}")
+                                return {
+                                    'video_path': str(video_file),
+                                    'prompt': prompt,
+                                    'model': self.video_model,
+                                    'duration': duration,
+                                    'resolution': resolution
+                                }
+                        break
+                    elif status in ['failed', 'error', 'cancelled']:
+                        logger.error(f"Video generation failed: {status_data.get('message', 'Unknown error')}")
+                        return None
+                    # else: still processing
+                    
+            logger.error("Video generation timed out")
+            return None
+            
+        except Exception as e:
+            logger.error(f"Video generation error: {e}")
+            return None
+    
     def check_health(self) -> bool:
         """Check if LLM service is available"""
         try:
@@ -544,6 +829,8 @@ def init_llm_from_config(config_dict: Dict[str, Any]) -> LLMClient:
         api_key=llm_config.get('api_key', ''),
         model=llm_config.get('theme_model', 'qwen3.5:9b'),
         vision_model=llm_config.get('vision_model', 'qwen3.5:9b'),
+        image_model=llm_config.get('image_model', 'wanx2.1-turbo-i2v'),
+        video_model=llm_config.get('video_model', 'wan2.1-t2v-14b'),
         max_tokens=llm_config.get('max_tokens', 800),
         temperature=llm_config.get('temperature', 0.7),
         timeout=timeout
